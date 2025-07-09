@@ -1,6 +1,6 @@
 # BELAJAR RUST
 
-siapin otak kelean yak **ASU**
+Siapin otak kelean yak **ASU**
 
 ## Requirement
 
@@ -12,15 +12,15 @@ siapin otak kelean yak **ASU**
 
 ## Sejarah Rust
 
-Rust pertama kali dibuat dengan proyek pribadi oleh kariawan mozila yang bernama **Graydon Hoare** di tahun 2006. Pada tahun 2009 mozila mulai mendukung proyek ini dan melakukn percobaan untuk membuat browser engine yang diberi nama **SERVO**, dan secara official diumumkan ke public sekitar 2010.
+Rust pertama kali dibuat dengan proyek pribadi oleh karyawan mozila yang bernama **Graydon Hoare** di tahun 2006. Pada tahun 2009 mozila mulai mendukung proyek ini dan melakukn percobaan untuk membuat browser engine yang diberi nama **SERVO**, dan secara official diumumkan ke public sekitar 2010.
 
 Rust dirilis secara public oleh mozila pada tahun 2015, dan sekarang rust banyak digunakan di perusahaan-perusahaan besar seperti Discord, Google, Meta, DropBox dll. Pada tahun 2022, Rust rust menjadi salahsatu bahasa pemograman yang didukung untuk pengembangan Linux Kernel, selain bahasa C dan Assambly.
 
 ## Kenapa Rust??
 
-Rust memiliki meory safety, maksudnya rust memiliki sistem pemrosesan memory yang aman, tidak seperti C, C++, Java dll yang mana kita harus melakukan menejemen memory secara manual. Selain itu Rust juga merupakan bahasa pemograman yang high performace bahkan di beberpa hal kecepatan rust bisa hampir menyamai kecepatan bahasa C/C++.
+Rust memiliki memory safety, maksudnya rust memiliki sistem pemrosesan memory yang aman, tidak seperti C, C++, Java dll yang mana kita harus melakukan menejemen memory secara manual. Selain itu Rust juga merupakan bahasa pemograman yang high performace bahkan di beberpa hal kecepatan rust bisa hampir menyamai kecepatan bahasa C/C++.
 
-Rust juga memiliki concurrency yang sanagat safety dan sanagat baik, ini sanat mendukung untuk pembuatan applikasi yang sanagat high performace.
+Rust juga memiliki concurrency yang sangat safety dan sangat baik, ini sanat mendukung untuk pembuatan applikasi yang sangat high performace.
 
 ## Proses Pengembangan Applikasi Berbasis Rust
 
@@ -52,7 +52,7 @@ rustup update
 
 ## Membuat project rust
 
-ketika kita menginstall rustup kita juga diberikan sebuah package manager yang bernama cargo. kita bisa memanfaatkan cargo untuk membuat project denga cara menajalankan command berikut.
+ketika kita menginstall rustup kita juga diberikan sebuah package manager yang bernama cargo. kita bisa memanfaatkan cargo untuk membuat project denga cara menjalankan command berikut.
 
 ```sh
 cargo new nama_project
@@ -84,9 +84,9 @@ println!("Mas Ganteng") // menampilkan ke layar dengan melakukan enter
 ```
 
 ## Cargo
-Ketika kita akan membangun Applikasi yang besar tentunya kita akan membutuhkan package manager untuk mengelola dependensi dari applikasi yang kita buat. Dengan menggunakan package manager kita bisa dengan mudah untuk mengelola dependensi, melakukan kopilasi, melakukan unit test dan sebagainya. Dengan adanya Dependensi menejemen ini kita sebagai developer dapat lebih produktif untuk mengembangkan applikasi  
+Ketika kita akan membangun Applikasi yang besar tentunya kita akan membutuhkan package manager untuk mengelola dependensi dari applikasi yang kita buat. Dengan menggunakan package manager kita bisa dengan mudah untuk mengelola dependensi, melakukan kompilasi, melakukan unit test dan sebagainya. Dengan adanya Dependensi manajemen ini kita sebagai developer dapat lebih produktif untuk mengembangkan applikasi  
   
-Sebelumnya kita telah menyinggung tentang **Cargo**. Pada bahasa pemogramman Rust kita bisa menggunakan Cargo sebagai Depensi menejemen kita.
+Sebelumnya kita telah menyinggung tentang **Cargo**. Pada bahasa pemogramman Rust kita bisa menggunakan Cargo sebagai Depensi manajemen kita.
 
 ## Membuat Distribusi File
 Ketika kita sudah selesai develop sebuah applikasi tentunya kita akan membuat distribusi file untuk di upload ke server dan dijalankan di sisi server. Untuk melakukan hal tersebut pada bahasa pemogramman Rust kita bisa memanfaatkan perintah Cargo.
@@ -110,7 +110,7 @@ fn test_hello() {
     println!("Hallo Mas ganteng >_<")
 }
 ```
-Untuk menjalankan kode unit test kita diatas kita bisa jalankan perintah `cargo test nama_fucntion -- --exact`
+Untuk menjalankan kode unit test kita diatas kita bisa jalankan perintah `cargo test nama_function -- --exact`
 ``` sh
 cargo test test_hello -- --exact
 ```

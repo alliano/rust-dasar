@@ -114,3 +114,57 @@ Untuk menjalankan kode unit test kita diatas kita bisa jalankan perintah `cargo 
 ``` sh
 cargo test test_hello -- --exact
 ```
+Untuk kedepanya kita akan menggunakan unit test untuk belajar Rust.
+
+## Variable
+Variable adalah tempat menyimpan suatu data. Untuk membuat variable pada bahasa pemogramman Rust kita bisa menggunakan keyword `let` dan diikuti dengan nama variable. Pada bahasaa pemogramman Rust ketika variable tersebut telah di isi data maka variable tersebut tidak dapat diubah(variable bersifat immutable)
+
+``` rs
+#[test]
+fn test_variable() {
+    let nama = "mas mas ganteng >_<"; // variable tidak dapat diubah(bersifat immutable)
+    println!("Hallo {}", nama);
+}
+```
+
+## Mutable
+Pada chapter variable kita telah mengetahui bahwa variabel itu bersifat immutabel atau tidak bisa diubah lagi, namun jikalau kita ingin mengubah variable tersebut bersifat muttable itu bisa. Pada bahasa pemrogramman Rust untuk membuat variable yang bersifat mutable kita bisa menggunakan keyword `let mut`
+
+``` rs
+#[test]
+fn test_mutable() {
+    let mut nama = "Mas kim";
+    println!("nama saya {}", nama); // Output => nama saya Mas kim
+    nama = "Mas Nardji"; // reassign nilai variable
+    println!("Nama saya {}", nama); // Output => nama saya Mas Nardji
+}
+```
+
+## Static Typing
+Rust adalah bahasa yang menganut *Static Typing* artinya setiap kita membuat variable atau sebuah function jenis datanya harus fix dan tidak dapat berubah lagi.  
+  
+Pada chapter sebelumnya kita telah membuat variable dengan tipe data string atau text, ketika variable tersebut kita reassign dengan tipe data number.
+
+``` rs
+#[test]
+fn test_static_typing() {
+    let mut nama = "mas kim";
+    println!("nama saya {}", nama);
+    nama = 10; // ini akan error
+    println!("nama saya {}", nama);
+}
+```
+
+## Variable Shadowing
+Pada bahasa pemrogramman Rust kita bisa membuat variable dengan nama yang sama. Namun ketika kita membuat variabel dengan nama yang sama maka variabel sebelumnya dengan nama yang sama akan menjadi variable shadowing atau menjadi tertutup.  
+Praktik ini tidak begitu disarankan karena kedepanya dapat membingungkan kita ketika  membaca baris kode.
+``` rs
+#[test]
+fn test_shadowning() {
+    let name: &str = "Mas Kim"; // ini akan menjadi variable shadowing(tertutup tidak dapat di akses oleh baris paling bawah setelah variabel baru dengan nama sama di deklarasikan)
+    println!("nama saya {}", name);
+
+    let nama = 22;
+    println!("Umur saya {}", nama);
+}
+```

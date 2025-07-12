@@ -78,3 +78,49 @@ fn number_conversion() {
 
     println!("bilangan {}", bil2);
 }
+
+#[test]
+fn test_operator_aritmatika(){
+    let a = 10;
+    let b = 12;
+    let hasil = a * b; // contoh perkalian
+    println!("hasil {}", hasil)
+}
+
+#[test]
+fn test_comparation() {
+    let hasil = 10 > 100;
+    println!("hasil {}", hasil);
+}
+
+#[test]
+fn test_char() {
+    let a: char = 'p';
+    let b: char = 's';
+    println!("karakter a => {}", a);
+    println!("karakter b => {}", b);
+}
+
+#[test]
+fn test_tuple() {
+    let data: (i32, f32, char) = (1000, 2.7, 'a');
+    println!("{:?}", data)
+}
+
+#[test]
+fn test_access_tuple() {
+    let data: (char, i8, bool) = ('a', 10, false);
+
+    let char1: char = data.0;
+    let angka: i8 = data.1;
+    let boolean: bool = data.2;
+
+    println!("karakter {} angka {} boolean {}", char1, angka, boolean);
+}
+
+#[test]
+fn test_desctucturing_tuple() {
+    let data: (i32, char, bool) = (10, 's', true);
+    let (angka, karakter, boolean) = data; // destructuring tuple
+    println!("angak {} karakter {} boolean {}", angka, karakter, boolean)
+}

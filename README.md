@@ -368,7 +368,7 @@ fn test_access_tuple() {
 ```
 
 ## Destucturing Tuple
-
+Sebelumnya kita telah mengetahui cara mengakses data tuple. Ada satu cara lagi untuk mengakses data tuple tersebut, yaitu dengan cara destucturing.
 
 ``` rs
 #[test]

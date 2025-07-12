@@ -168,3 +168,103 @@ fn test_shadowning() {
     println!("Umur saya {}", nama);
 }
 ```
+
+## Tipe Data
+Pada bahasa pemrogramman Rust tipe data secara garis besar terbagi menjadi 2 subset yaitu:
+ - **Skalar:** Merepresentasikan singgle value(nilai tunggal) misalnya seperti integer, float, boolean, char
+ - **Compound:** Merepresentasikan beberapa nilai dalam 1 tipe misalnya seperti Array, atau Tuple
+
+| Scalar Type    | Deskripsi
+|----------------|--------------------------------------------|
+| Integer        | Tipe data anggka dalam bilangan bulat       
+| Float          | Tipe data angka dalam bilangan desimal(pecahan)
+| Boolean        | Tipe data yang hanya bernilai *true* atau *false*
+| Char           | Tipe data karakter (huruf)
+
+
+
+| Compound Type  | Deskripsi
+|----------------|-----------------------------------------------------
+| Array          | Kumpulan beberapa data(data collection) dengan tipe data yang sama
+| Tuple          | Kumpulan beberap data(data collection) denga tipe data berbeda-beda
+
+## Explicit Type
+Di pemogramman dengan bahasa Rust ketika kita memnbuat variable kita tidak perlu menyebutkan tipe datanya secara explicit, karena Rust dapat mendeteksi secara otomatis tipe daatanya berdasarkan value yang kita tugaskan/assign kedalam variable tersebut. Namun jikalau kita ingin menyebutkan tipe datanya kita bisa menambahkan tanda (:) setelah nama variable.
+
+``` rs
+#[test]
+fn test_tipe_data() {
+    // secara explisit
+    let umur = 22;
+
+    // secara implisit
+    let usia: i32 = 22;
+
+    println!("Umur saya {}", umur);
+    println!("Usia saya {}", usia);
+}
+```
+
+## Integer
+Berikut ini adalah tabel yang berisi jenis-jenis tipe bilangan bulat integer
+| Panjang  | Signed | Range Signed                                              | Unsigned | Range Unsigned
+|----------|--------|-----------------------------------------------------------|----------|------
+| 8-bit    | i8     | -128 - 127                                                | u8       | 0 - 255
+| 16-bit   | i16    | -32,768 - 32,767                                          | u16      | 0 - 65,535
+| 32-bit   | i32    | -2,147,483,648 - 2,147,483,647                            | u32      | 0 - 4,294,967,295
+| 64-bit   | i64    | -9,223,372,036,854,775,808 - 9,223,372,036,854,775,807    | u64      | 0 - 18,446,744,073,709,551,61
+| 128-bit  | i128   | -170,141,183,460,469,231,731,687,303,715,884,105,728 - 170,141,183,460,469,231,731,687,303,715,884,105,727| u128     | 0 - 340,282,366,920,938,463,463,374,607,431,768,211,455
+
+
+### Float 
+Berikut ini adalah jenis-jenis tipe data bilangan floating poin atau pecahan
+| Panjang  | Float
+|----------|----------
+| 32-bit   | f32
+| 64-bit   | f64
+
+### Usize
+Usize adalah tipe data integer yang panjang bit nya megikuti dari platform Sistem Operasi yang digunakan, misalnya jikalau kita menggunakan Linux dengan 64-bit maka unize nya akan menjadi 64-bit.
+
+| Usize          | Keterangan
+|----------------|------------
+| isize          | 32-bit/64-bit
+| usize(Unsigned)| 32-bit/64-bit
+
+## Defaut jenis Integer yang Digunakan
+Ketika kita membuat variable dengan nilai number secara explisit(tidak menyebutkan jenis nya) maka Rust akan menggunakan defaut jenis number nya. jika bilangan bulat maka Rust akan menggunakan `i32` dan jikalau bilangan floating/pecahan maka akan menggunakan `f64`.
+
+``` rs
+#[test]
+fn test_number(){
+    let angka = 10; // maka by defautl akan menggunakan jenis i32/32-bit
+    let pecahan = 10.5; // maka by defautl akan menggunakan jenis f64/64-bit
+    println!("angaka {}, pecahan {}", angka, pecahan);
+}
+```
+## Number Conversion
+Rust bisa melakukan konversi jenis tipe data number dari yang ukuranya kecil misalnya `i8` ke ukuran yang lebih besar misalnya `i16` begitupun sebaliknya. Namun perlu berhati-hati ketika melakukan konversi dari jenis yang besar misalnya `i16` ke jenis yang kecil misalnya `i8`, jikalau nilai dari `i16` itu lebih besar size nya dari pada jenis konversi nya misalnya `i8` maka akan terjadi error `Integer Overflow`.  
+Untuk melakukan konversi kita bisa menggunaka keyword `as`;
+``` rs
+#[test]
+fn number_conversion() {
+    let angka: i8 = 20;
+
+    // melakukan konversi dari jenis i8 ke i16
+    let angka2: i16 = angka as i16;
+
+    println!("angaka {}", angka2);
+
+
+    // melakukan konversi dari i16 ke i8
+    let numer: i16 = 100;
+    let number2: i8 = numer as i8;
+
+    println!("number {}", number2);
+
+
+    let bil: i32 = 500;
+    let bil2: i8 = bil as i8; // ini akan terjadi Error Integer Overflow
+}
+```
+## Operator Aritmatika

@@ -195,11 +195,11 @@ Pada bahasa pemrogramman Rust tipe data secara garis besar terbagi menjadi 2 sub
 | ----------- | ------------------------------------------------- |
 | Integer     | Tipe data anggka dalam bilangan bulat             |
 | Float       | Tipe data angka dalam bilangan desimal(pecahan)   |
-| Boolean     | Tipe data yang hanya bernilai _true_ atau _false_ |
+| Boolean     | Tipe data yang hanya bernilai true atau false     |
 | Char        | Tipe data karakter (huruf)                        |
 
 | Compound Type | Deskripsi                                                           |
-| ------------- | ------------------------------------------------------------------- |
+|--------------|---------------------------------------------------------------------|
 | Array         | Kumpulan beberapa data(data collection) dengan tipe data yang sama  |
 | Tuple         | Kumpulan beberap data(data collection) denga tipe data berbeda-beda |
 
@@ -223,18 +223,30 @@ fn test_tipe_data() {
 
 ## Integer
 
-Berikut ini adalah tabel yang berisi jenis-jenis tipe bilangan bulat integer | Panjang | Signed | Range Signed | Unsigned | Range Unsigned |----------|--------|-----------------------------------------------------------|----------|------ | 8-bit | i8 | -128 - 127 | u8 | 0 - 255 | 16-bit | i16 | -32,768 - 32,767 | u16 | 0 - 65,535 | 32-bit | i32 | -2,147,483,648 - 2,147,483,647 | u32 | 0 - 4,294,967,295 | 64-bit | i64 | -9,223,372,036,854,775,808 - 9,223,372,036,854,775,807 | u64 | 0 - 18,446,744,073,709,551,61 | 128-bit | i128 | -170,141,183,460,469,231,731,687,303,715,884,105,728 - 170,141,183,460,469,231,731,687,303,715,884,105,727| u128 | 0 - 340,282,366,920,938,463,463,374,607,431,768,211,455
+Berikut ini adalah tabel yang berisi jenis-jenis tipe bilangan bulat integer 
+
+| Panjang | Signed | Range Signed                     | Unsigned | Range Unsigned 
+|---------|--------|----------------------------------|----------|---------------------
+| 8-bit   | i8     | -128 - 127                       | u8       | 0 - 255 
+| 16-bit  | i16    | -32,768 - 32,767                 | u16      | 0 - 65,535 
+| 32-bit  | i32    | -2,147,483,648 - 2,147,483,647   | u32      | 0 - 4,294,967,295 
+| 64-bit  | i64    | -9,223,372,036,854,775,808 - 9,223,372,036,854,775,807 | u64 | 0 - 18,446,744,073,709,551,61 
+| 128-bit | i128   | -170,141,183,460,469,231,731,687,303,715,884,105,728 - 170,141,183,460,469,231,731,687,303,715,884,105,727| u128 | 0 - 340,282,366,920,938,463,463,374,607,431,768,211,455
 
 ### Float
 
-Berikut ini adalah jenis-jenis tipe data bilangan floating poin atau pecahan | Panjang | Float |----------|---------- | 32-bit | f32 | 64-bit | f64
+Berikut ini adalah jenis-jenis tipe data bilangan floating poin atau pecahan 
+| Panjang  | Float 
+|----------|---------- 
+| 32-bit   | f32 
+| 64-bit   | f64
 
 ### Usize
 
 Usize adalah tipe data integer yang panjang bit nya megikuti dari platform Sistem Operasi yang digunakan, misalnya jikalau kita menggunakan Linux dengan 64-bit maka unize nya akan menjadi 64-bit.
 
 | Usize           | Keterangan    |
-| --------------- | ------------- |
+|-----------------|---------------|
 | isize           | 32-bit/64-bit |
 | usize(Unsigned) | 32-bit/64-bit |
 
@@ -281,7 +293,14 @@ fn number_conversion() {
 
 ## Operator Aritmatika
 
-Berikut ini adalah tabel operator aritmatika | Operator | deskripsi |-----------|------------------- | + | penjumlahan | - | pengurangan | \* | perkalian | / | pembagian | % | modulus/sisa bagi
+Berikut ini adalah tabel operator aritmatika 
+| Operator | deskripsi 
+|----------|------------------- 
+| +        | penjumlahan 
+| -        | pengurangan 
+| *        | perkalian 
+| /        | pembagian 
+| %        | modulus/sisa bagi
 
 ```rs
 #[test]
@@ -295,7 +314,14 @@ fn test_operator_aritmatika(){
 
 ## Operator komparasi
 
-Berikut ini adalah operator komparasi yang dapat kita gunakan dalam bahasa pemrogramman Rust. | Operator | deskripsi |----------|----------- | > | lebih dari | < | kurang dari | => | lebih dari samadengan | <= | kurang dari sama dengan | == | sama dengan
+Berikut ini adalah operator komparasi yang dapat kita gunakan dalam bahasa pemrogramman Rust. 
+| Operator | deskripsi 
+|----------|----------- 
+| >        | lebih dari 
+| <        | kurang dari 
+| =>       | lebih dari samadengan 
+| <=       | kurang dari sama dengan 
+| ==       | sama dengan
 
 ## Char
 

@@ -155,3 +155,32 @@ fn test_array() {
     let array: [char; 5] = ['a', 'b', 'c', 'd', 'e'];
     println!("{:?}", array);
 }
+
+#[test]
+fn test_muttable_array() {
+    // membuat array dengan tipe data number u8 dan bersifat mutable
+    let mut array: [u8; 5] = [1, 2, 3, 4, 5];
+    println!("array baru => {:?}", array);
+
+    // mengubah nilai dari tiap tipa elemen array
+    array[0] = 7;
+    array[1] = 8;
+    array[2] = 9;
+    array[3] = 10;
+    array[4] = 11;
+
+    println!("array setelah dibuah ==>>{:?}", array);
+}
+
+#[test]
+fn array_dua_dimensi() {
+    // array dua dimensi
+    let array2d: [[i8; 3]; 3] = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+    ];
+
+    println!("Array 2 dimensi");
+    println!("{:?}", array2d)
+}

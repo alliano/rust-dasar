@@ -430,3 +430,74 @@ fn test_array() {
     println!("{:?}", array);
 }
 ```
+
+Untuk mengakses elemen array kita bisa mengaksesnya dengan menyebutkan index nya:
+``` rs
+#[test]
+fn test_akses_index() {
+    let array: [char; 5] = ['1', '2', '3', '4', '5'];
+    let elemen1: char = array[0]; // mengakses elemen array dengan menggunakan INDEX dari array
+    println!("elemen array 1 {}", elemen1);
+}
+```
+
+## Mutable Array
+Sebelumnya kita telah mempelajari mengenai tipe data array. By default saat kita membuat variabel dengan tipe data array maka tiap-tiap elemen nya tidak bisa dirubah kembali(bersifat immutable) jikalau kita ingin bisa mengubah elemen array nya maka kita harus mengubah variable tersebut menjadi `muttable`.
+
+``` rs
+#[test]
+fn test_muttable_array() {
+    // membuat array dengan tipe data number u8 dan bersifat mutable
+    let mut array: [u8; 5] = [1, 2, 3, 4, 5];
+    println!("array baru => {:?}", array);
+
+    // mengubah nilai dari tiap tipa elemen array
+    array[0] = 7;
+    array[1] = 8;
+    array[2] = 9;
+    array[3] = 10;
+    array[4] = 11;
+
+    println!("array setelah dibuah ==>>{:?}", array);
+}
+```
+Jika kita ingin mengetahui panjang atau banyaknya elemen array kita bisa menggunakan fungsi `len()` milik array.
+
+
+``` rs
+
+#[test]
+fn test_muttable_array() {
+    // membuat array dengan tipe data number u8 dan bersifat mutable
+    let mut array: [u8; 5] = [1, 2, 3, 4, 5];
+    // mengubah nilai dari tiap tipa elemen array
+    array[0] = 7;
+    array[1] = 8;
+    array[2] = 9;
+    array[3] = 10;
+    array[4] = 11;
+    /**
+     * ketika kita memanggil fungsi len() maka len() akan mengembalikan angka
+     * sesuai banyaknya elemen array dengan tipe data usize
+     * */
+    let length: usize = array.len();
+    println!("panjang array {}", length);
+}
+```
+
+## Array dua Dimensi
+Array dua dimensi adalah tipe data array yang mana elemen nya merupakan array(array didalam array). hal tersebut biasanya sering sekali kita lakukan ketika kita mengembangkan sebuah applikasi.
+``` rs
+#[test]
+fn array_dua_dimensi() {
+    // array dua dimensi
+    let array2d: [[i8; 3]; 3] = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+    ];
+
+    println!("Array 2 dimensi");
+    println!("{:?}", array2d)
+}
+```

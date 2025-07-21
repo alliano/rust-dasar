@@ -124,3 +124,34 @@ fn test_desctucturing_tuple() {
     let (angka, karakter, boolean) = data; // destructuring tuple
     println!("angak {} karakter {} boolean {}", angka, karakter, boolean)
 }
+
+#[test]
+fn test_muttable_tuple() {
+    let mut data: (i16, bool, char) = (10, true, 's');
+
+    println!("angka {} boolean {} char {}", data.0, data.1, data.2);
+
+    // reassigment data tuple
+    data.0 = 20;
+    data.1 = false;
+    data.2 = 'a';
+
+    println!("angaka {} boolean {} char {}", data.0, data.1, data.2);
+}
+
+#[allow(dead_code)]
+fn unit() {
+    println!("Halo mas ambarawa");
+}
+
+#[test]
+fn test_unit() {
+    let result: () = unit();
+    println!("{:?}", result);
+}
+
+#[test]
+fn test_array() {
+    let array: [char; 5] = ['a', 'b', 'c', 'd', 'e'];
+    println!("{:?}", array);
+}

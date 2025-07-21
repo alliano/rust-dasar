@@ -378,3 +378,55 @@ fn test_desctucturing_tuple() {
     println!("angak {} karakter {} boolean {}", angka, karakter, boolean)
 }
 ```
+## Muttable Tuple
+Sebelumnya ketika kita membuat tipe data tuple seperti yang kita lakukan diatas, tipe data tuple tersebut bersifat mutable artinya tiap-tiap datanya tidak dapat diubah lagi atau sudah fix. Jikalau kita ingin tipe data tuple tersebut bersifat mutable atau isi data nya dapat diubah kembali kita bisa menggunakan keyword mut setelah keyword let.
+
+```rs
+#[test]
+fn test_muttable_tuple() {
+    let mut data: (i16, bool, char) = (10, true, 's');
+
+    println!("angka {} boolean {} char {}", data.0, data.1, data.2);
+
+    // reassigment data tuple, data tuple tidak imutable
+    data.0 = 20;
+    data.1 = false;
+    data.2 = 'a';
+
+    println!("angaka {} boolean {} char {}", data.0, data.1, data.2);
+}
+```
+
+## Unit
+Unit pada bahasa pemrogramman Rust adalah tipe data tupple kosong `()` artinya tuple tampa nilai apapun. Unit ini biasanya digunakan untuk function yang tidak memiliki return value
+``` rs
+// fungsi yang tidak memiliki return value
+fn unit() {
+    println!("Halo mas ambarawa");
+}
+
+#[test]
+fn test_unit() {
+    // ketika kita memanggil fungsi unit() maka fungsi unit() akan mengembalikan tuple kosong
+    let result: () = unit();
+    println!("{:?}", result);
+}
+```
+
+## Array
+Tipe data array termasuk tipe data collection, tipe data array merupakan tipe data yang berisi kumpulan data; mirip seperti tipe data tuple namun yang membedakan tipe data array dengan tuple adalah: pada tipe data tuple kita bisa menggunakan banyak tipe data untuk element-element nya jikalau pada array kita hanya boleh menggunakan satu tipe data saja.  
+  
+Untuk membuat tipe data array kita bisa menggunakan simbole `[]` dan didalam kurung siku memiliki 2 parameter:
+- parameter pertama tipe data
+- parameter kedua panjang element
+
+``` rs
+#[test]
+fn test_array() {
+    /**
+     * [char, 5] => char merupakan 
+     * */
+    let array: [char; 5] = ['a', 'b', 'c', 'd', 'e'];
+    println!("{:?}", array);
+}
+```

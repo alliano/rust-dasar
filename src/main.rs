@@ -184,3 +184,42 @@ fn array_dua_dimensi() {
     println!("Array 2 dimensi");
     println!("{:?}", array2d)
 }
+
+
+const MAXIMUM_VALUE: i32 = 500;
+#[test]
+fn test_constant() {
+    const MINIMUM_VALUE: i32 = 5;
+
+    println!("nilai minimum {}, nilai maksimum {}", MINIMUM_VALUE, MAXIMUM_VALUE);
+}
+
+
+fn fungsi_1() {
+    // variabel umur akan disimpan di stack
+    let umur: i32 = 22;
+
+    /*
+     * variabel nama ini akan disimpamn di heap karena tipe data String itu ukuranya tidak fixed
+     * bisa saja kecil dan bisa saja besar tergantung banyaknya kareketer yang disimpan
+     */
+    let nama: String = String::from("Mas Kim");
+    println!("Nama saya {}, umur saya {}", nama, umur);
+}
+
+fn fungsi_2() {
+    let umur: i32 = 22;
+    let nama: String = String::from("Mas Kim");
+    println!("Nama saya {}, umur saya {}", nama, umur);
+}
+
+
+#[test]
+fn test_heap_stack() {
+    /*
+     * kedua funcsi ini akan disimpan di stack
+     */
+    fungsi_1();
+    fungsi_2();
+}
+

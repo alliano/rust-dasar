@@ -501,3 +501,78 @@ fn array_dua_dimensi() {
     println!("{:?}", array2d)
 }
 ```
+
+## Constant
+Constant adalah sebuah variabel yang bersifat immutabel(tidak dapat diubah nilainya) yang dibuat dengan keyword `const`. `const` dan `let` merupakan keyword untuk membuat variabel namun yang membedakan keyword `const` dan `let` yaitu: 
+- **const**
+  - `const` tidak dapat diubah menjadi muttabel
+  - nilai dari variable `cosnt` harus langsung dideklarasikan ketika variabel dibuat
+- **let**
+  - `let` bisa diubah menjadi muttabel dengan keyword `mut`
+  - nilai variabel yang dibuat menggunakan `let` tidak harus langsung di deklarasikan ketika variabel dibuat.
+  
+Untuk membuat variabel dengan menggunakan keyword `const` kita harus menyebutkan tipe datanya secara explisit dan nama variabel harus menggunakan huruf kapital, jikalau nama variabelnya lebih dari 1 kata maka pemisah dari nama variabel tersebut menggunakan (_), atau simpelnya menggunakan format `snake case`
+
+``` rs 
+const MAXIMUM_VALUE: i32 = 500;
+#[test]
+fn test_constant() {
+    const MINIMUM_VALUE: i32 = 5;
+    println!("nilai minimum {}, nilai maksimum {}", MINIMUM_VALUE, MAXIMUM_VALUE)
+}
+```
+
+## Gerbage Collection
+*Gerbage Collection* adalah sebuah feature yang banyak digunakan oleh banyak bahasa pemrogramman misalnya seperti Go, Java untuk melakukan management memory. Cara kerja *Gerbage Collection* yaitu dengan cara memantau data yang sudah tidak diguanakan lagi di memory dan menghapus data tersebut secara otomatis.  
+  
+Namun ada juga bahasa pemrogramman yang tidak memiliki *gerbage collection* misalnya seperti C atau C++. Bahasa pemrogramman yang tidak memiliki *Gerbage collection* harus melakukan menejemen memory secara manual, jadi kita sebagai programmer kita harus mengalokasikan atau menghapus data di memory secara manual.  
+  
+Bahsa pemrogramman Rust memiliki pendekatan yang berbeda untuk menejemen memory. Rust tidak memiliki *gerbage collection* dan Rust tidak melakukan menejemen memory secara manual.
+
+## Stack dan Heap
+Rust menggunakan pendekatan *Stack* dan *Heap* unutk melakukan menejemen memory.  
+**Stack:** adalah tempat penyimpanan data dalam struktur data stack(*first in last out*) atau tumpukan. Data yang disimpan dalam Stack ukuranya sudah fixed atau sudah pasti.
+
+Contoh:
+``` rs
+#[test]
+fn test(){
+    // data umur ini akan disimpan pada Stack karena ukuranya fixed, yaitu i32
+    let umur: i32 = 22;
+    println!("Umur saya {}", umur);
+}
+```
+
+**Heap:** Adalah tempat penyimpanan data yang ukuranya belum fixed atau belum pasti. Ketika terapat data yang berlum fixed. Rust akan melakukan Request kepada *Heap* dan  *Heap* akan meperintah Memory Allocator untuk mencari area kosong didalam memory dan menyimpan data tersebut didalam area tersebut; Setelah Memory Allocatory berhasil mentimpan data maka Kita akan diberikan Pointer(petunjuk/address) dimana data tersebut disimpan didalam memory, Dan setelah itu pointer tersebut disimpan di *Stack* karena pointer tersebut bersifat fixed.  
+
+Contoh:
+
+``` rs
+fn fungsi_1() {
+    // variabel umur akan disimpan di stack
+    let umur: i32 = 22;
+
+    /*
+     * variabel nama ini akan disimpamn di heap karena tipe data String itu ukuranya tidak fixed
+     * bisa saja kecil dan bisa saja besar tergantung banyaknya kareketer yang disimpan
+     */
+    let nama: String = String::from("Mas Kim");
+    println!("Nama saya {}, umur saya {}", nama, umur);
+}
+
+fn fungsi_2() {
+    let umur: i32 = 22;
+    let nama: String = String::from("Mas Kim");
+    println!("Nama saya {}, umur saya {}", nama, umur);
+}
+
+
+#[test]
+fn test_heap_stack() {
+    /*
+     * kedua funcsi ini akan disimpan di stack
+     */
+    fungsi_1();
+    fungsi_2();
+}
+```

@@ -958,6 +958,98 @@ fn array_iteration(){
     while index < array.len() {
         println!("nama ke-{} adalah {}", index, array[index]);
         index += 1;
-    }    
+    }
+}
+```
+## For loop
+Sebelumnya kita telah mempelajar bagaimana cara mengambil elemen array menggunakan `while loop`. Sebenarnya ada cara yang lebih mudah dan praktis daripada menggunakan `while loop` yaitu dengan menggunakan `for loop`.  
+```rust
+#[test]
+fn for_expression(){
+    let array: [&str; 5] = ["Mas Kim", "Mas Nardji", "Mas Ambarawa", "Mas Ganteng", "Mas Abdillah"];
+
+    for nama in array.iter() {
+        println!("nama saya {}", nama);
+    }
+}
+```
+## Range Data Type 
+Pada bahasa pemrogramman Rust, tipe data **Range** digunakan untuk merepresentasikan rentang nilai, biasanya dalam iterasi atau perulangan.
+
+### Penjelasan Range
+- **Sintaks:** `start..end`
+- **Artinya:** Rentang dari `start` hingga sebelum `end` (eksklusif `end`).
+- **Contoh:** `0..5` berarti 0, 1, 2, 3, 4.
+
+
+```rust
+#[test]
+fn range(){
+    /*
+    * Tipe data Range di Rust digunakan untuk merepresentasikan rentang nilai, biasanya digunakan pada perulangan.
+    * Contoh: 0..5 adalah Range dari 0 sampai 4 (eksklusif 5).
+    * Range<usize> berarti rentang nilai bertipe usize.
+    * Range sering digunakan pada for loop untuk mengakses indeks array atau melakukan iterasi sejumlah tertentu.
+     */
+    let range: Range<usize> = 0..5;
+    let names: [&str; 5] = ["Mas Kim", "Mas Nardji", "Mas Ambarawa", "Mas Ganteng", "Mas Abdillah"];
+    
+    // ini artinya akan menampilkan elemen array mulai dari index 0 sampai sebelum 5(index ke 4)
+    for index in range {
+        println!("nama ke-{} adalah {}", index, names[index]);
+    }
+}
+```
+
+## Range inclusive
+
+### Penjelasan RangeInclusive di Rust
+
+Tipe data `RangeInclusive` pada Rust digunakan untuk merepresentasikan rentang nilai yang inklusif, yaitu nilai awal dan nilai akhir akan ikut diiterasi. Sintaks penulisan `0..=5` berarti rentang dari 0 sampai 5, termasuk angka 5. Tipe ini berguna ketika ingin melakukan perulangan yang mencakup batas atas, misalnya mengakses seluruh elemen array berdasarkan indeks dari 0 hingga panjang array - 1.
+
+Contoh penggunaan:
+```rust
+#[test]
+fn range_inclusive(){
+    let range: std::ops::RangeInclusive<usize> = 0..=5;
+    let names: [&str; 6] = ["Mas Kim", "Mas Nardji", "Mas Ambarawa", "Mas Ganteng", "Mas Abdillah", "Mas God of War"];
+    for index in range {
+        println!("nama ke-{} adalah {}", index, names[index]);
+    }
+}
+```
+
+## Function Parameter
+```rust
+fn fungsi_parameter(first_name: &str, last_name: &str) {
+    println!("Nama lengkap saya {} {}", first_name, last_name);
+}
+
+#[test]
+fn test_fungsi_parameter() {
+    fungsi_parameter("Abdillah", "Kim");
+}
+```
+
+## Funcition With Return Value
+``` rust
+fn factorial(n: i32) -> i32 {
+    if n < 1 {
+        return 0;
+    }
+
+    let mut result: i32 = 1;
+
+    for i in 1..=n {
+        result *= i;
+    }
+    result
+}
+
+#[test]
+fn fungsi_return_value() {
+    let angka: i32 = 5;
+    let result: i32 = factorial(angka);
+    println!("Hasil faktorial dari {} adalah {}", angka, result);
 }
 ```

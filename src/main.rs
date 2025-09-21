@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 
 fn main() {
     println!("Hello, world!");
@@ -432,4 +434,104 @@ fn array_iteration(){
         println!("nama ke-{} adalah {}", index, array[index]);
         index += 1;
     }    
+}
+
+#[test]
+fn for_expression(){
+    let array: [&str; 5] = ["Mas Kim", "Mas Nardji", "Mas Ambarawa", "Mas Ganteng", "Mas Abdillah"];
+
+    for nama in array.iter() {
+        println!("nama saya {}", nama);
+    }
+}
+
+#[test]
+fn rage_exclucive(){
+    /*
+    * Tipe data Range di Rust digunakan untuk merepresentasikan rentang nilai, biasanya digunakan pada perulangan.
+    * Contoh: 0..5 adalah Range dari 0 sampai 4 (eksklusif 5).
+    * Range<usize> berarti rentang nilai bertipe usize.
+    * Range sering digunakan pada for loop untuk mengakses indeks array atau melakukan iterasi sejumlah tertentu.
+     */
+    let range: Range<usize> = 0..5;
+    let names: [&str; 5] = ["Mas Kim", "Mas Nardji", "Mas Ambarawa", "Mas Ganteng", "Mas Abdillah"];
+    for index in range {
+        println!("nama ke-{} adalah {}", index, names[index]);
+    }
+}
+
+#[test]
+fn range_inclusive(){
+    /*
+    * Tipe data RangeInclusive di Rust digunakan untuk merepresentasikan rentang nilai yang inklusif, biasanya digunakan pada perulangan.
+    * Contoh: 0..=5 adalah Range dari 0 sampai 5 (inklusif 5).
+    * RangeInclusive<usize> berarti rentang nilai bertipe usize.
+    * RangeInclusive sering digunakan pada for loop untuk mengakses indeks array atau melakukan iterasi sejumlah tertentu.
+     */
+    let range: std::ops::RangeInclusive<usize> = 0..=5;
+    let names: [&str; 6] = ["Mas Kim", "Mas Nardji", "Mas Ambarawa", "Mas Ganteng", "Mas Abdillah", "Mas God of War"];
+    for index in range {
+        println!("nama ke-{} adalah {}", index, names[index]);
+    }
+}
+
+
+fn fungsi_parameter(first_name: &str, last_name: &str) {
+    println!("Nama lengkap saya {} {}", first_name, last_name);
+}
+
+#[test]
+fn test_fungsi_parameter() {
+    fungsi_parameter("Abdillah", "Kim");
+}
+
+fn factorial(n: i32) -> i32 {
+    if n < 1 {
+        return 0;
+    }
+
+    let mut result: i32 = 1;
+
+    for i in 1..=n {
+        result *= i;
+    }
+    result
+}
+
+#[test]
+fn fungsi_return_value() {
+    let angka: i32 = 5;
+    let result: i32 = factorial(angka);
+    println!("Hasil faktorial dari {} adalah {}", angka, result);
+}
+
+
+fn print_text(text: &str, times: u8) {
+    
+    if times == 0 {
+        return;
+    }else {
+        println!("{}", text);
+    }
+    print_text(text,  times - 1);
+}
+
+#[test]
+fn test_recursive_function() {
+    print_text("Mas Kim", 5);
+}
+
+fn factorial_recursive(n: u8) -> u8 {
+    if n <= 1{
+        return 1;
+    }
+
+    n * factorial_recursive(n - 1)
+}
+
+#[test]
+fn test_factorial_recursive() {
+    let angka: u8 = 5;
+    let result: u8 = factorial_recursive(angka);
+    println!("Hasil faktorial dari {} adalah {}", angka, result);
 }

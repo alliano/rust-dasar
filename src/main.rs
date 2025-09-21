@@ -1,3 +1,4 @@
+
 fn main() {
     println!("Hello, world!");
 }
@@ -203,13 +204,13 @@ fn fungsi_1() {
      * variabel nama ini akan disimpamn di heap karena tipe data String itu ukuranya tidak fixed
      * bisa saja kecil dan bisa saja besar tergantung banyaknya kareketer yang disimpan
      */
-    let nama: String = String::from("Mas Kim");
+    let nama: String = String::from("Abdillah Kim");
     println!("Nama saya {}, umur saya {}", nama, umur);
 }
 
 fn fungsi_2() {
     let umur: i32 = 22;
-    let nama: String = String::from("Mas Kim");
+    let nama: String = String::from("Ghroot");
     println!("Nama saya {}, umur saya {}", nama, umur);
 }
 
@@ -217,9 +218,218 @@ fn fungsi_2() {
 #[test]
 fn test_heap_stack() {
     /*
-     * kedua funcsi ini akan disimpan di stack
+     * kedua fungsi ini akan disimpan di stack, namun tipe data String pada fungsi_1 dan fungsi_2
+     * akan disimpan di heap
      */
     fungsi_1();
     fungsi_2();
 }
 
+
+
+
+#[test]
+fn test_str() {
+    let nama: &str = " Abdillah ";
+    let new_name = nama.trim();
+    println!("nama saya {}", new_name);
+}
+
+
+#[test]
+fn strnig() {
+    /*
+     * &str memiliki banyak operasi yang bisa digunakan, salah satunya adalah trim()
+     * ketika kita melakukan trim() data pada variabel nama tidak akan berubah
+     * karena &str itu bersifat immutable (tidak bisa diubah)
+     * sehingga kita perlu menampung hasil dari trim() ke dalam variabel baru
+     */
+   let nama: &str = " God of War ";
+   let new_name: &str = nama.trim();
+
+    println!("nama 1 {}", nama);
+    println!("nama 2 {}", new_name);
+}
+
+#[test]
+fn string_type() {
+    /*
+     * String itu bersifat mutable (bisa diubah)
+     * sehingga ketika kita melakukan trim() data pada variabel nama akan berubah
+     * dan tidak perlu menampungnya ke dalam variabel baru
+     */
+    let mut nama: String = String::from(" God of War ");
+    nama = nama.trim().to_string(); // melakukan trim() dan mengubahnya ke tipe data String
+
+    println!("game saya {}", nama);
+
+    nama.push_str(" Ragnarok"); // menambahkan string ke variabel nama
+    println!("game saya {}", nama);
+}
+
+
+#[test]
+fn orwnership() {
+    let a:i32 = 10;
+    
+    {
+        /*
+         *b => berada pada scope yang berbeda dengan scope a, maka b tidak bisa di 
+         * akses di luar scope ini
+         */
+        let b: i32 =  20;
+        println!("nilai b {}", b);
+
+    }
+
+    println!("nilai a {}", a);
+    // print!("nilai b {}", b); // ini akan terjadi error karena variabel b sudah
+}
+
+#[test]
+fn data_copy() {
+    let a: i32 = 10;
+
+    let b: i32 = a; // melakukan copy data dari a ke b
+
+    println!("nilai a {}", a);
+    println!("nilai b {}", b);
+}
+
+#[test ]
+fn test_ownership_movement() {
+    let a: String = String::from("Mas Kim");
+    let b: String = a; // melakukan move ownership dari a ke b
+    println!("nilai b {}", b);
+    // println!("nilai a {}", a); // ini akan terjadi error karena ownership a sudah di
+}
+
+#[test]
+fn clone() {
+    let a: String = String::from("Abdillah Kim");
+    let b: String = a.clone(); // melakukan clone data dari a ke b
+    println!("nilai a {}", a);
+    println!("nilai b {}", b);
+}
+
+#[test]
+fn if_expression(){
+    let nilai: i32 = 80;
+    let hasil: &str;
+
+    if nilai >= 75 {
+        hasil = "Lulus";
+    } else {
+        hasil = "Tidak Lulus";
+    }
+
+    println!("Hasil ujian anda {}", hasil);
+}
+
+#[test]
+fn if_let_expression(){
+    let nilai: i32 = 100;
+    let result: &str = if nilai >= 75 {
+        "Lulus"
+    }else if nilai >= 50 {
+        "Remedial"
+    } else {
+        "Tidak Lulus"
+    };
+    println!("Hasil ujian anda {}", result);
+}
+
+#[test]
+fn loop_expression(){
+    let mut counter: i32 = 0;
+
+    loop {
+        counter += 1;
+
+        if counter == 10 {
+            break;
+        }else if counter % 2 != 0 {
+            println!("nilai counter {}", counter);
+            /*
+             * continue disini akan mengulang ke awal loop
+             * sehingga ketika counter bernilai genap
+             * maka tidak akan di print
+             */
+            continue;
+        }
+    }
+    println!("Hasil akhirnya adalah {}", counter);
+}
+
+#[test]
+fn loop_return_value(){
+    let mut counter: i32 = 0;
+    let result: i32 = loop {
+        if counter == 10{
+            /*
+             * break disini akan mengembalikan nilai counter
+             * ke dalam variabel result
+             * 
+             * kita tidak perlu menuluskan keyword return
+             * karena break sudah otomatis mengembalikan nilai
+             * dari counter
+             */
+            break counter;
+        }else {
+            counter += 1;
+            println!("menambah nilai counter {}", counter);
+
+            /*
+             * continue disini akan mengulang ke awal loop
+             */
+            continue;
+        }
+    };
+
+    println!("Hasil akhirnya adalah {}", result);
+}
+
+
+#[test]
+fn loop_lable(){
+    let mut number = 1;
+    'outer: loop {
+        let mut i = 1;
+        loop {
+            if number > 10 {
+                break 'outer;
+            }
+
+            println!("{} x {} = {}", number, i, number * i);
+            i += 1;
+
+            if i > 10 {
+                break;
+            }
+        }
+        number += 1;
+    }
+}
+
+#[test]
+fn while_expression(){
+    let mut counter: i32 = 0;
+    while counter < 10 {
+        counter += 1;
+
+        if counter % 2 != 0 {
+            println!("nilai ganjil {}", counter);
+            counter += 1;
+        }
+    }
+}
+
+#[test]
+fn array_iteration(){
+    let array: [&str; 5] = ["Mas Kim", "Mas Nardji", "Mas Ambarawa", "Mas Ganteng", "Mas Abdillah"];
+    let mut index: usize = 0;
+    while index < array.len() {
+        println!("nama ke-{} adalah {}", index, array[index]);
+        index += 1;
+    }    
+}

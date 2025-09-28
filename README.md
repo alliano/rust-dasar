@@ -1233,7 +1233,7 @@ Sebelumnya kita telah mengetahui cara agar dari tipe data yang disimpan pada Hea
   
 Rust memiliki feature Reference yang dapat kita gunakan agar ownership dari suatu data tidak berpindah. untuk menggunakan Reference tesebut kita cukup memberikan simbol `&` sebelum tipe dari argumen nya dan ketika memasukan argumen ke parameter function.
 
-**Contoh:**
+**Contoh: **
 
 
 ```rust
@@ -1257,3 +1257,41 @@ fn test_reference() {
     println!("success fully {}", last_name); // masih bisa di print
 }
 ```
+
+## Borrowing
+Ketika kita menggunakan data Reference sebagai parameter dari function, By default kita tidak bisa melakukan modifikasi pada data tersebut.  
+Jika kita mencoba melakukan modifikasi pada data Reference/borrowing maka akan terjadi error.  
+
+```rust
+fn add_str(name: &String) {
+    // name.push_str("Kim") // ini akan error karena kita mencoba melakukan modifikasi data reference/boroowing
+    println!("{}", name);
+}
+
+#[test]
+fn terst_add_str() {
+    let mut name: String = String::from("Abdillah");
+    add_str(&name);
+    name.push_str(" Kim"); // ini bisa kita lakukan karena variabel name merupakan owner dari scope ini(bukan borrowing/reference)
+    println!("{}", name);
+}
+```
+
+## Borrowing Mutable
+Sebelkumnya kita telah mengetahui bahwa data Reverence atau data borrowing tidak dapat dimodifikasi by default. namun jikalau kita ingin memodifikasi data Referece kita bisa melakukan hal tersebut dengan cara menambahkan `&mut` sebelum tipe datanya.  
+
+**Note:** Perlu diperhatikan untuk mengubah data borrowing/Referece jadi updatabel kita harus memastikan bahwa data tersebut memang bersifat mutable.
+```rust
+fn add_str(name: &mut String) {
+    name.push_str("Kim") // ini tidak akan error karena data reference tersebut bersifat mnutable
+    println!("{}", name);
+}
+
+#[test]
+fn terst_add_str() {
+    let mut name: String = String::from("Abdillah");
+    add_str(&mut name);
+    println!("{}", name);
+}
+```
+

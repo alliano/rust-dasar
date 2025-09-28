@@ -649,3 +649,16 @@ fn test_reference() {
     println!("success fully {}", first_name); // masih bissa di print
     println!("success fully {}", last_name); // masih bisa di print
 }
+
+fn add_str(name: &mut String) {
+    // name.push_str("Kim") // ini akan error karena kita mencoba melakukan modifikasi data reference/boroowing
+    println!("{}", name);
+}
+
+#[test]
+fn terst_add_str() {
+    let mut name: String = String::from("Abdillah");
+    add_str(&mut name);
+    name.push_str(" Kim"); // ini bisa kita lakukan karena variabel name merupakan owner dari scope ini(bukan borrowing/reference)
+    println!("{}", name);
+}

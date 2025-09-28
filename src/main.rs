@@ -535,3 +535,117 @@ fn test_factorial_recursive() {
     let result: u8 = factorial_recursive(angka);
     println!("Hasil faktorial dari {} adalah {}", angka, result);
 }
+
+
+fn print_number(number: i32) {
+    println!("ini adalah angka {}", number);
+}
+
+fn print_str(nama: String) {
+    println!("hallo nama saya {}", nama)
+}
+
+#[test]
+fn function_ownership() {
+    let number: i32 = 10;
+
+    /*
+     * i32 adalah tipe data yang fix, maka rust akan menyimpanan data tersebut pada stack
+     * berhubung variable number bertipe i32. yang terjadi dibalik layar sebenarnya adalah, variabel number akan di copy ke parameter dari function print_number.
+     * dan variabel tersebut karena 
+     */
+    print_number(number);
+    println!("selesai print data {}", number);
+
+
+    /*
+     * String adalah tipedata yang disimpan pada heep, maka yang terjadi dibalik layar adalah. Rust akan memindahkan
+     * ownersip dari variabe nama ke parameter function print_str. setelah function tersebut selesai di eksekusi
+     * maka data dari nama akan di hapus
+     */
+    let nama: String = String::from("Abdillah kim");
+    print_str(nama);
+
+    // println!("nama {}", nama); => ini akan error karena variable nama sudah dihapus dari proses/variabel nama sudah berpindah ownership nya(tidak dam scope ini lagi)
+}
+
+fn return_ownership(first_name: String, last_name: String) -> String {
+    /*
+     * Ownership dari retun value ini adalah variabel yang memanggil function ini
+     */
+    return format!("my full name is {} {}", first_name, last_name);
+}
+
+fn sum(arg1: i32, arg2: i32) -> i32 {
+    /*
+     * berhubung return value nya bertipe data fix(data yang disimpan pada stack)
+     * maka return value nya merupakan hasil dari copy arg1 + arg2 
+     */
+    return arg1 + arg2;
+}
+
+#[test]
+fn return_value_ownership() {
+    let first_name: String = String::from("Abdillah");
+    let last_name: String = String::from("Kim");
+
+    /*
+     * variabel full_name akan menjadi owner dari return value dari function return_ownership 
+     */
+    let full_name: String = return_ownership(first_name, last_name);
+    println!("{}", full_name);
+
+    // println!("{}",first_name); // first_name ini sudah tidak bisa diakses
+    // println!("{}",last_name); // last_name juga tidak bisa diakses
+
+    let number1: i32 = 100;
+    let number2: i32 = 200;
+
+    let result: i32 = sum(number1, number2);
+
+    /*
+     * variabel number1 dan number2 ownersip nya tidak akan berpindah. karena data tersebut
+     * dicopy
+     */
+    println!("hasil dari penjumlahan {} + {} adalah {}", number1, number2, result);
+}
+
+fn print_full_name(first_name: String, last_name: String) -> (String, String, String) {
+    let full_name: String = format!("my full name is {} {}", first_name, last_name);
+    return  (first_name, last_name, full_name);
+}
+
+#[test]
+fn test_tuple_owner() {
+    let first_name: String = String::from("Abdillah");
+    let last_name: String = String::from("Kim");
+    /*
+     * dengan begini kita bisa mengembaikan ownersip dari data first_name dan last_name 
+     * dengan teknik variabel shadowing menggunakan destructuring tuple 
+     */
+    let (first_name, last_name, full_name) = print_full_name(first_name, last_name);
+
+    println!("{}", full_name);
+    println!("success fully {}", first_name);
+    println!("success fully {}", last_name);
+}
+
+fn print_full_name_ref(first_name: &String, last_name: &String) -> String {
+    return format!("my full name is {} {}", first_name, last_name);
+}
+
+#[test]
+fn test_reference() {
+    let first_name: String = String::from("Abdillah");
+    let last_name: String = String::from("Kim");
+    /*
+     * dengan menggunakna &sebelum tipe data dari argumen nya. itu akan memberi
+     * tahu rust bahwa owner dari data tersebut tidak dipindahkan melainkan hanya 
+     * memberi reference nya saja 
+     */
+    let full_name: String = print_full_name_ref(&first_name, &last_name); // first_name dan last_name tidak berpindah ownership nya
+
+    println!("{}", full_name);
+    println!("success fully {}", first_name); // masih bissa di print
+    println!("success fully {}", last_name); // masih bisa di print
+}

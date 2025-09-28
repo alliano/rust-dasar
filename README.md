@@ -1053,3 +1053,207 @@ fn fungsi_return_value() {
     println!("Hasil faktorial dari {} adalah {}", angka, result);
 }
 ```
+
+## Penjelasan Function Ownership
+
+Di Rust, konsep ownership sangat penting untuk memastikan keamanan memori tanpa garbage collector. Ownership menentukan siapa yang "memiliki" data dan bertanggung jawab atas validitas serta penghapusan data tersebut.
+
+Ketika sebuah variabel dikirim sebagai argumen ke fungsi, ada dua kemungkinan yang terjadi tergantung tipe datanya:
+
+1. **Tipe Data Copy (misal: i32, bool, char, dsb): tipe data yang bersifat fix**
+   - Tipe data ini disimpan di stack dan memiliki trait `Copy`.
+   - Saat dikirim ke fungsi, nilainya akan di-copy, sehingga variabel asli tetap bisa digunakan setelah fungsi dipanggil.
+   - Contoh:
+     ```rust
+     let number: i32 = 10;
+     print_number(number); // number di-copy ke parameter fungsi
+     println!("{}", number); // masih bisa digunakan
+     ```
+
+2. **Tipe Data Move (misal: String, Vec, dsb): tipe data yang bisa growable**
+   - Tipe data ini disimpan di heap dan tidak memiliki trait `Copy`.
+   - Saat dikirim ke fungsi, ownership-nya berpindah ke parameter fungsi. Variabel asli tidak bisa digunakan lagi setelah fungsi dipanggil.
+   - Contoh:
+     ```rust
+     let nama: String = String::from("Abdillah kim");
+     print_str(nama); // ownership nama berpindah ke fungsi
+     // println!("{}", nama); // ERROR: ownership sudah berpindah
+     ```
+
+
+**Contoh:**
+```rust
+fn print_number(number: i32) {
+    println!("ini adalah angka {}", number);
+}
+
+fn print_str(nama: String) {
+    println!("hallo nama saya {}", nama)
+}
+
+#[test]
+fn function_ownership() {
+    let number: i32 = 10;
+
+    /*
+     * i32 adalah tipe data yang fix, maka rust akan menyimpanan data tersebut pada stack
+     * berhubung variable number bertipe i32. yang terjadi dibalik layar sebenarnya adalah, variabel number akan di copy ke parameter dari function print_number.
+     * dan variabel tersebut karena 
+     */
+    print_number(number);
+    println!("selesai print data {}", number);
+
+
+    /*
+     * String adalah tipedata yang disimpan pada heep, maka yang terjadi dibalik layar adalah. Rust akan memindahkan
+     * ownersip dari variabe nama ke parameter function print_str. setelah function tersebut selesai di eksekusi
+     * maka data dari nama akan di hapus
+     */
+    let nama: String = String::from("Abdillah kim");
+    print_str(nama);
+
+    // println!("nama {}", nama); => ini akan error karena variable nama sudah dihapus dari proses/variabel nama sudah berpindah ownership nya(tidak dam scope ini lagi)
+}
+```
+
+**Kesimpulan:**  
+Ownership pada fungsi membantu Rust mengelola memori secara aman dan efisien. Pahami perbedaan antara tipe data yang di-copy dan yang di-move agar terhindar dari error ownership saat memanggil fungsi.
+
+
+## Return value ownersip
+**Konsep Ownership pada Return Value**  
+Rust menggunakan sistem ownership untuk mengelola memori secara aman tanpa garbage collector. Setiap value di Rust memiliki satu owner pada satu waktu. Ketika value dipindahkan (moved), owner-nya juga berpindah.
+
+**Return Value Bertipe Heap (Contoh: String)**  
+
+Pada fungsi berikut:
+```rust
+fn return_ownership(first_name: String, last_name: String) -> String {
+    return format!("my full name is {} {}", first_name, last_name);
+}
+```
+
+**Parameter**: `first_name` dan `last_name` bertipe `String` (data di heap).
+**Ownership**: Ketika fungsi dipanggil, ownership dari `first_name` dan `last_name` berpindah ke fungsi.
+**Return Value**: Fungsi mengembalikan String baru. Ownership dari return value berpindah ke variabel yang menerima hasil fungsi.  
+
+**Contoh pemanggilan:**  
+Setelah pemanggilan, `full_name` menjadi owner dari return value.
+first_name dan last_name tidak bisa diakses lagi karena ownership-nya sudah berpindah.
+``` rust
+let full_name: String = return_ownership(first_name, last_name);
+```
+**Return Value Bertipe Stack (Contoh: i32)**  
+Pada fungsi berikut:
+``` rust
+fn sum(arg1: i32, arg2: i32) -> i32 {
+    return arg1 + arg2;
+}
+```
+
+**Parameter**: arg1 dan `arg2` bertipe `i32` (data di `stack`, tipe `Copy`).
+**Ownership**: Karena tipe `i32` adalah `Copy`, value-nya dicopy saat dipassing ke fungsi dan saat return.
+**Return Value**: Ownership tidak berpindah, value hanya dicopy.  
+
+Contoh pemanggilan:
+``` rust
+let result: i32 = sum(number1, number2);
+```
+
+`number1` dan `number2` masih bisa diakses setelah pemanggilan fungsi.  
+```rust
+fn return_ownership(first_name: String, last_name: String) -> String {
+    /*
+     * Ownership dari retun value ini adalah variabel yang memanggil function ini
+     */
+    return format!("my full name is {} {}", first_name, last_name);
+}
+
+fn sum(arg1: i32, arg2: i32) -> i32 {
+    /*
+     * berhubung return value nya bertipe data fix(data yang disimpan pada stack)
+     * maka return value nya merupakan hasil dari copy arg1 + arg2 
+     */
+    return arg1 + arg2;
+}
+
+#[test]
+fn return_value_ownership() {
+    let first_name: String = String::from("Abdillah");
+    let last_name: String = String::from("Kim");
+
+    /*
+     * variabel full_name akan menjadi owner dari return value dari function return_ownership 
+     */
+    let full_name: String = return_ownership(first_name, last_name);
+    println!("{}", full_name);
+
+    // println!("{}",first_name); // first_name ini sudah tidak bisa diakses
+    // println!("{}",last_name); // last_name juga tidak bisa diakses
+
+    let number1: i32 = 100;
+    let number2: i32 = 200;
+
+    let result: i32 = sum(number1, number2);
+
+    /*
+     * variabel number1 dan number2 ownersip nya tidak akan berpindah. karena data tersebut
+     * dicopy
+     */
+    println!("hasil dari penjumlahan {} + {} adalah {}", number1, number2, result);
+}
+```
+
+## Mengembalikan Ownership
+```rust
+fn print_full_name(first_name: String, last_name: String) -> (String, String, String) {
+    let full_name: String = format!("my full name is {} {}", first_name, last_name);
+    return  (first_name, last_name, full_name);
+}
+
+#[test]
+fn test_tuple_owner() {
+    let first_name: String = String::from("Abdillah");
+    let last_name: String = String::from("Kim");
+    /*
+     * dengan begini kita bisa mengembaikan ownersip dari data first_name dan last_name 
+     * dengan teknik variabel shadowing menggunakan destructuring tuple 
+     */
+    let (first_name, last_name, full_name) = print_full_name(first_name, last_name);
+
+    println!("{}", full_name);
+    println!("success fully {}", first_name);
+    println!("success fully {}", last_name);
+}
+```
+
+
+## Reference
+Sebelumnya kita telah mengetahui cara agar dari tipe data yang disimpan pada Heap ownersip nya tidak dipindahkan dengan menggunakan data tuple. Namun hal tesebut sangatlah tidak baik kerena akan membuat kode kita menjadi sangat buruk dan susah dibaca.  
+  
+Rust memiliki feature Reference yang dapat kita gunakan agar ownership dari suatu data tidak berpindah. untuk menggunakan Reference tesebut kita cukup memberikan simbol `&` sebelum tipe dari argumen nya dan ketika memasukan argumen ke parameter function.
+
+**Contoh:**
+
+
+```rust
+fn print_full_name_ref(first_name: &String, last_name: &String) -> String {
+    return format!("my full name is {} {}", first_name, last_name);
+}
+
+#[test]
+fn test_reference() {
+    let first_name: String = String::from("Abdillah");
+    let last_name: String = String::from("Kim");
+    /*
+     * dengan menggunakna &sebelum tipe data dari argumen nya. itu akan memberi
+     * tahu rust bahwa owner dari data tersebut tidak dipindahkan melainkan hanya 
+     * memberi reference nya saja 
+     */
+    let full_name: String = print_full_name_ref(&first_name, &last_name); // first_name dan last_name tidak berpindah ownership nya
+
+    println!("{}", full_name);
+    println!("success fully {}", first_name); // masih bissa di print
+    println!("success fully {}", last_name); // masih bisa di print
+}
+```

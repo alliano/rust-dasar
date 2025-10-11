@@ -1283,7 +1283,7 @@ Sebelkumnya kita telah mengetahui bahwa data Reverence atau data borrowing tidak
 **Note:** Perlu diperhatikan untuk mengubah data borrowing/Referece jadi updatabel kita harus memastikan bahwa data tersebut memang bersifat mutable.
 ```rust
 fn add_str(name: &mut String) {
-    name.push_str("Kim") // ini tidak akan error karena data reference tersebut bersifat mnutable
+    name.push_str("Kim") // ini tidak akan error karena data reference tersebut bersifat mutable
     println!("{}", name);
 }
 
@@ -1295,3 +1295,136 @@ fn terst_add_str() {
 }
 ```
 
+## Sice Reference
+
+``` rust
+#[test]
+fn slice_reference() {
+    let array:[i32; 10] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    let slice1: &[i32] = &array[..]; // membuat reference dengan value reference dari variabel array
+    let slice2: &[i32] = &array[0..5]; // membuat reference dari variabel array dari index 0 sampai 5
+    let slice3: &[i32] = &array[8..]; // membuat reference dari variabel array dari index 8 sampai akhir
+
+    println!("slice 1{:?}", slice1);
+    println!("slice 2{:?}", slice2);
+    println!("slice 3{:?}", slice3);
+}
+```
+
+## String Reference
+``` rust
+#[test]
+fn string_slice() {
+    let fullname: String = String::from("Guwathel");
+
+    let str_ref1: &str = &fullname[..];
+    let str_ref2: &str = &fullname[0..4];
+    let str_ref3: &str = &fullname[3..];
+
+    println!("str_ref1 {}", str_ref1);
+    println!("str_ref2 {}", str_ref2);
+    println!("str_ref3 {}", str_ref3);
+}
+```
+
+## Struct
+Struct adalah sebuah tipedata yang mirip dengan tipe data tuple. tipe data struct ini memungkinkan kita untuk membuat sebuah tipe data layaknya seperti object di bahasa pemrogramman yang berorenteasi object. Untuk membuat struct kita cukup gunakan keyword `struct` setelah itu diikui nama struct nya dan kita defina field dan tipe nya.
+``` rust
+#[test]
+fn struct_test() {
+    let person: Person = Person {
+        first_name: String::from("Abdillah"),
+        last_name: String::from("Kim"),
+        age: 21,
+        is_marige: false,
+    };
+    println!("{}", person.first_name);
+    println!("{}", person.last_name);
+    println!("{}", person.age);
+    println!("{}", person.is_marige);
+}
+
+struct Person {
+    first_name: String,
+    last_name: String,
+    age: u16,
+    is_marige: bool,
+}
+```
+
+## Tuple Struct
+Struct juga bisa kita gunakan seperti data tuple. caranya mudah cukup setelah nama struct kita gunakan kurung biasa dan kita define tipe value nya.
+``` rust
+#[test]
+fn tuple_struct() {
+    let geopoint: GeoPoint = GeoPoint(1203.0231203, -0391.231324); // membuat instance struct tuple
+    println!("longnitude :{:?}", geopoint.0);
+    println!("latitude: {:?}", geopoint.1);
+}
+
+struct GeoPoint(f64, f64);
+```
+
+## Method
+Secara sekilas method itu mirip seperti function, cara membuatnya dll sanagat sama. namun yang membedakanya adalah. method berada dialam struct.
+``` rust
+struct Person {
+    first_name: String,
+    last_name: String,
+    age: u16,
+    is_marige: bool,
+}
+
+impl Person {
+    // self ini adalah instance dari Person
+    fn say_hello(&self, name: &str) {
+        println!("hello {} my name is {}", name, self.first_name);
+    }
+}
+#[test]
+fn method() {
+    let person: Person = Person {
+        first_name: String::from("Abdillah"),
+        last_name: String::from("Kim"),
+        age: 21,
+        is_marige: false,
+    };
+    // disini kita tidak perlu lagi mengirimkan instance person. karena udah di handle secara otomatis
+    person.say_hello("Iszrail");
+}
+```
+
+## Associations Function
+Setiap function yang dibuat didalam impl kita sebut sebagai associations function karena pada parameter nya terdapat key `self` yang menghubungkan ke instance nya. namun jikalu kita tidak ingin function tersebut terassociations(terhubung dengan instancenya) maka kita tidak perlu memberikan parameter `self`.
+
+``` rust
+struct GeoLocation(f64, f64);
+impl GeoLocation {
+    // tidak menambahkan parameter self
+    fn new(long: f64, lat: f64) -> GeoLocation {
+        GeoLocation(long, lat)
+    }
+}
+
+#[test]
+fn associations_function() {
+    let geolocation: GeoLocation = GeoLocation::new(0213.129321, -2392.1231243);
+    println!("long: {}", geolocation.0);
+    println!("lat: {}", geolocation.1);
+}
+```
+
+## Enum
+Enum adalah sebuah tipe data yang dapat kita gunakan untuk membatasi tipe input. dengan enum ini kita bisa memberi tahu tipe apa saja yang boleh digunakan
+``` rust
+enum Level {
+    HARD,
+    MEDIUM,
+    EASY
+}
+
+#[test]
+fn enum_test() {
+    let _level: Level = Level::EASY;
+}
+```

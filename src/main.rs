@@ -1,6 +1,5 @@
 use std::ops::Range;
 
-
 fn main() {
     println!("Hello, world!");
 }
@@ -22,7 +21,7 @@ fn test_mutable() {
     println!("nama saya {}", nama);
 
     nama = "Mas Nardji";
-    
+
     println!("nama saya {}", nama);
 }
 
@@ -69,7 +68,6 @@ fn number_conversion() {
 
     println!("angaka {}", angka2);
 
-
     // melakukan konversi dari i16 ke i8
     let numer: i16 = 100;
     let number2: i8 = numer as i8;
@@ -83,7 +81,7 @@ fn number_conversion() {
 }
 
 #[test]
-fn test_operator_aritmatika(){
+fn test_operator_aritmatika() {
     let a = 10;
     let b = 12;
     let hasil = a * b; // contoh perkalian
@@ -178,25 +176,22 @@ fn test_muttable_array() {
 #[test]
 fn array_dua_dimensi() {
     // array dua dimensi
-    let array2d: [[i8; 3]; 3] = [
-        [1, 2, 3],
-        [4, 5, 6],
-        [7, 8, 9]
-    ];
+    let array2d: [[i8; 3]; 3] = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
 
     println!("Array 2 dimensi");
     println!("{:?}", array2d)
 }
-
 
 const MAXIMUM_VALUE: i32 = 500;
 #[test]
 fn test_constant() {
     const MINIMUM_VALUE: i32 = 5;
 
-    println!("nilai minimum {}, nilai maksimum {}", MINIMUM_VALUE, MAXIMUM_VALUE);
+    println!(
+        "nilai minimum {}, nilai maksimum {}",
+        MINIMUM_VALUE, MAXIMUM_VALUE
+    );
 }
-
 
 fn fungsi_1() {
     // variabel umur akan disimpan di stack
@@ -216,7 +211,6 @@ fn fungsi_2() {
     println!("Nama saya {}, umur saya {}", nama, umur);
 }
 
-
 #[test]
 fn test_heap_stack() {
     /*
@@ -227,16 +221,12 @@ fn test_heap_stack() {
     fungsi_2();
 }
 
-
-
-
 #[test]
 fn test_str() {
     let nama: &str = " Abdillah ";
     let new_name = nama.trim();
     println!("nama saya {}", new_name);
 }
-
 
 #[test]
 fn strnig() {
@@ -246,8 +236,8 @@ fn strnig() {
      * karena &str itu bersifat immutable (tidak bisa diubah)
      * sehingga kita perlu menampung hasil dari trim() ke dalam variabel baru
      */
-   let nama: &str = " God of War ";
-   let new_name: &str = nama.trim();
+    let nama: &str = " God of War ";
+    let new_name: &str = nama.trim();
 
     println!("nama 1 {}", nama);
     println!("nama 2 {}", new_name);
@@ -269,19 +259,17 @@ fn string_type() {
     println!("game saya {}", nama);
 }
 
-
 #[test]
 fn orwnership() {
-    let a:i32 = 10;
-    
+    let a: i32 = 10;
+
     {
         /*
-         *b => berada pada scope yang berbeda dengan scope a, maka b tidak bisa di 
+         *b => berada pada scope yang berbeda dengan scope a, maka b tidak bisa di
          * akses di luar scope ini
          */
-        let b: i32 =  20;
+        let b: i32 = 20;
         println!("nilai b {}", b);
-
     }
 
     println!("nilai a {}", a);
@@ -298,7 +286,7 @@ fn data_copy() {
     println!("nilai b {}", b);
 }
 
-#[test ]
+#[test]
 fn test_ownership_movement() {
     let a: String = String::from("Mas Kim");
     let b: String = a; // melakukan move ownership dari a ke b
@@ -315,7 +303,7 @@ fn clone() {
 }
 
 #[test]
-fn if_expression(){
+fn if_expression() {
     let nilai: i32 = 80;
     let hasil: &str;
 
@@ -329,11 +317,11 @@ fn if_expression(){
 }
 
 #[test]
-fn if_let_expression(){
+fn if_let_expression() {
     let nilai: i32 = 100;
     let result: &str = if nilai >= 75 {
         "Lulus"
-    }else if nilai >= 50 {
+    } else if nilai >= 50 {
         "Remedial"
     } else {
         "Tidak Lulus"
@@ -342,7 +330,7 @@ fn if_let_expression(){
 }
 
 #[test]
-fn loop_expression(){
+fn loop_expression() {
     let mut counter: i32 = 0;
 
     loop {
@@ -350,7 +338,7 @@ fn loop_expression(){
 
         if counter == 10 {
             break;
-        }else if counter % 2 != 0 {
+        } else if counter % 2 != 0 {
             println!("nilai counter {}", counter);
             /*
              * continue disini akan mengulang ke awal loop
@@ -364,20 +352,20 @@ fn loop_expression(){
 }
 
 #[test]
-fn loop_return_value(){
+fn loop_return_value() {
     let mut counter: i32 = 0;
     let result: i32 = loop {
-        if counter == 10{
+        if counter == 10 {
             /*
              * break disini akan mengembalikan nilai counter
              * ke dalam variabel result
-             * 
+             *
              * kita tidak perlu menuluskan keyword return
              * karena break sudah otomatis mengembalikan nilai
              * dari counter
              */
             break counter;
-        }else {
+        } else {
             counter += 1;
             println!("menambah nilai counter {}", counter);
 
@@ -391,9 +379,8 @@ fn loop_return_value(){
     println!("Hasil akhirnya adalah {}", result);
 }
 
-
 #[test]
-fn loop_lable(){
+fn loop_lable() {
     let mut number = 1;
     'outer: loop {
         let mut i = 1;
@@ -414,7 +401,7 @@ fn loop_lable(){
 }
 
 #[test]
-fn while_expression(){
+fn while_expression() {
     let mut counter: i32 = 0;
     while counter < 10 {
         counter += 1;
@@ -427,18 +414,30 @@ fn while_expression(){
 }
 
 #[test]
-fn array_iteration(){
-    let array: [&str; 5] = ["Mas Kim", "Mas Nardji", "Mas Ambarawa", "Mas Ganteng", "Mas Abdillah"];
+fn array_iteration() {
+    let array: [&str; 5] = [
+        "Mas Kim",
+        "Mas Nardji",
+        "Mas Ambarawa",
+        "Mas Ganteng",
+        "Mas Abdillah",
+    ];
     let mut index: usize = 0;
     while index < array.len() {
         println!("nama ke-{} adalah {}", index, array[index]);
         index += 1;
-    }    
+    }
 }
 
 #[test]
-fn for_expression(){
-    let array: [&str; 5] = ["Mas Kim", "Mas Nardji", "Mas Ambarawa", "Mas Ganteng", "Mas Abdillah"];
+fn for_expression() {
+    let array: [&str; 5] = [
+        "Mas Kim",
+        "Mas Nardji",
+        "Mas Ambarawa",
+        "Mas Ganteng",
+        "Mas Abdillah",
+    ];
 
     for nama in array.iter() {
         println!("nama saya {}", nama);
@@ -446,35 +445,47 @@ fn for_expression(){
 }
 
 #[test]
-fn rage_exclucive(){
+fn rage_exclucive() {
     /*
-    * Tipe data Range di Rust digunakan untuk merepresentasikan rentang nilai, biasanya digunakan pada perulangan.
-    * Contoh: 0..5 adalah Range dari 0 sampai 4 (eksklusif 5).
-    * Range<usize> berarti rentang nilai bertipe usize.
-    * Range sering digunakan pada for loop untuk mengakses indeks array atau melakukan iterasi sejumlah tertentu.
+     * Tipe data Range di Rust digunakan untuk merepresentasikan rentang nilai, biasanya digunakan pada perulangan.
+     * Contoh: 0..5 adalah Range dari 0 sampai 4 (eksklusif 5).
+     * Range<usize> berarti rentang nilai bertipe usize.
+     * Range sering digunakan pada for loop untuk mengakses indeks array atau melakukan iterasi sejumlah tertentu.
      */
     let range: Range<usize> = 0..5;
-    let names: [&str; 5] = ["Mas Kim", "Mas Nardji", "Mas Ambarawa", "Mas Ganteng", "Mas Abdillah"];
+    let names: [&str; 5] = [
+        "Mas Kim",
+        "Mas Nardji",
+        "Mas Ambarawa",
+        "Mas Ganteng",
+        "Mas Abdillah",
+    ];
     for index in range {
         println!("nama ke-{} adalah {}", index, names[index]);
     }
 }
 
 #[test]
-fn range_inclusive(){
+fn range_inclusive() {
     /*
-    * Tipe data RangeInclusive di Rust digunakan untuk merepresentasikan rentang nilai yang inklusif, biasanya digunakan pada perulangan.
-    * Contoh: 0..=5 adalah Range dari 0 sampai 5 (inklusif 5).
-    * RangeInclusive<usize> berarti rentang nilai bertipe usize.
-    * RangeInclusive sering digunakan pada for loop untuk mengakses indeks array atau melakukan iterasi sejumlah tertentu.
+     * Tipe data RangeInclusive di Rust digunakan untuk merepresentasikan rentang nilai yang inklusif, biasanya digunakan pada perulangan.
+     * Contoh: 0..=5 adalah Range dari 0 sampai 5 (inklusif 5).
+     * RangeInclusive<usize> berarti rentang nilai bertipe usize.
+     * RangeInclusive sering digunakan pada for loop untuk mengakses indeks array atau melakukan iterasi sejumlah tertentu.
      */
     let range: std::ops::RangeInclusive<usize> = 0..=5;
-    let names: [&str; 6] = ["Mas Kim", "Mas Nardji", "Mas Ambarawa", "Mas Ganteng", "Mas Abdillah", "Mas God of War"];
+    let names: [&str; 6] = [
+        "Mas Kim",
+        "Mas Nardji",
+        "Mas Ambarawa",
+        "Mas Ganteng",
+        "Mas Abdillah",
+        "Mas God of War",
+    ];
     for index in range {
         println!("nama ke-{} adalah {}", index, names[index]);
     }
 }
-
 
 fn fungsi_parameter(first_name: &str, last_name: &str) {
     println!("Nama lengkap saya {} {}", first_name, last_name);
@@ -505,15 +516,13 @@ fn fungsi_return_value() {
     println!("Hasil faktorial dari {} adalah {}", angka, result);
 }
 
-
 fn print_text(text: &str, times: u8) {
-    
     if times == 0 {
         return;
-    }else {
+    } else {
         println!("{}", text);
     }
-    print_text(text,  times - 1);
+    print_text(text, times - 1);
 }
 
 #[test]
@@ -522,7 +531,7 @@ fn test_recursive_function() {
 }
 
 fn factorial_recursive(n: u8) -> u8 {
-    if n <= 1{
+    if n <= 1 {
         return 1;
     }
 
@@ -535,7 +544,6 @@ fn test_factorial_recursive() {
     let result: u8 = factorial_recursive(angka);
     println!("Hasil faktorial dari {} adalah {}", angka, result);
 }
-
 
 fn print_number(number: i32) {
     println!("ini adalah angka {}", number);
@@ -552,11 +560,10 @@ fn function_ownership() {
     /*
      * i32 adalah tipe data yang fix, maka rust akan menyimpanan data tersebut pada stack
      * berhubung variable number bertipe i32. yang terjadi dibalik layar sebenarnya adalah, variabel number akan di copy ke parameter dari function print_number.
-     * dan variabel tersebut karena 
+     * dan variabel tersebut karena
      */
     print_number(number);
     println!("selesai print data {}", number);
-
 
     /*
      * String adalah tipedata yang disimpan pada heep, maka yang terjadi dibalik layar adalah. Rust akan memindahkan
@@ -579,7 +586,7 @@ fn return_ownership(first_name: String, last_name: String) -> String {
 fn sum(arg1: i32, arg2: i32) -> i32 {
     /*
      * berhubung return value nya bertipe data fix(data yang disimpan pada stack)
-     * maka return value nya merupakan hasil dari copy arg1 + arg2 
+     * maka return value nya merupakan hasil dari copy arg1 + arg2
      */
     return arg1 + arg2;
 }
@@ -590,7 +597,7 @@ fn return_value_ownership() {
     let last_name: String = String::from("Kim");
 
     /*
-     * variabel full_name akan menjadi owner dari return value dari function return_ownership 
+     * variabel full_name akan menjadi owner dari return value dari function return_ownership
      */
     let full_name: String = return_ownership(first_name, last_name);
     println!("{}", full_name);
@@ -607,12 +614,15 @@ fn return_value_ownership() {
      * variabel number1 dan number2 ownersip nya tidak akan berpindah. karena data tersebut
      * dicopy
      */
-    println!("hasil dari penjumlahan {} + {} adalah {}", number1, number2, result);
+    println!(
+        "hasil dari penjumlahan {} + {} adalah {}",
+        number1, number2, result
+    );
 }
 
 fn print_full_name(first_name: String, last_name: String) -> (String, String, String) {
     let full_name: String = format!("my full name is {} {}", first_name, last_name);
-    return  (first_name, last_name, full_name);
+    return (first_name, last_name, full_name);
 }
 
 #[test]
@@ -620,8 +630,8 @@ fn test_tuple_owner() {
     let first_name: String = String::from("Abdillah");
     let last_name: String = String::from("Kim");
     /*
-     * dengan begini kita bisa mengembaikan ownersip dari data first_name dan last_name 
-     * dengan teknik variabel shadowing menggunakan destructuring tuple 
+     * dengan begini kita bisa mengembaikan ownersip dari data first_name dan last_name
+     * dengan teknik variabel shadowing menggunakan destructuring tuple
      */
     let (first_name, last_name, full_name) = print_full_name(first_name, last_name);
 
@@ -640,8 +650,8 @@ fn test_reference() {
     let last_name: String = String::from("Kim");
     /*
      * dengan menggunakna &sebelum tipe data dari argumen nya. itu akan memberi
-     * tahu rust bahwa owner dari data tersebut tidak dipindahkan melainkan hanya 
-     * memberi reference nya saja 
+     * tahu rust bahwa owner dari data tersebut tidak dipindahkan melainkan hanya
+     * memberi reference nya saja
      */
     let full_name: String = print_full_name_ref(&first_name, &last_name); // first_name dan last_name tidak berpindah ownership nya
 
@@ -661,4 +671,142 @@ fn terst_add_str() {
     add_str(&mut name);
     name.push_str(" Kim"); // ini bisa kita lakukan karena variabel name merupakan owner dari scope ini(bukan borrowing/reference)
     println!("{}", name);
+}
+
+#[test]
+fn slice_reference() {
+    let array: [i32; 10] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    let slice1: &[i32] = &array[..]; // membuat reverence dengan value reference dari variabel array
+    let slice2: &[i32] = &array[0..5]; // membuat reference dari variabel array dari index 0 sampai 5
+    let slice3: &[i32] = &array[8..]; // membuat reference dari variabel array dari index 8 sampai akhir
+
+    println!("slice 1{:?}", slice1);
+    println!("slice 2{:?}", slice2);
+    println!("slice 3{:?}", slice3);
+}
+
+#[test]
+fn string_slice() {
+    let fullname: String = String::from("Guwathel");
+
+    let str_ref1: &str = &fullname[..];
+    let str_ref2: &str = &fullname[0..4];
+    let str_ref3: &str = &fullname[3..];
+
+    println!("str_ref1 {}", str_ref1);
+    println!("str_ref2 {}", str_ref2);
+    println!("str_ref3 {}", str_ref3);
+}
+
+#[test]
+fn struct_test() {
+    let person: Person = Person {
+        first_name: String::from("Abdillah"),
+        last_name: String::from("Kim"),
+        age: 21,
+        is_marige: false,
+    };
+    println!("{}", person.first_name);
+    println!("{}", person.last_name);
+    println!("{}", person.age);
+    println!("{}", person.is_marige);
+}
+
+#[test]
+fn struct_test_update_sintax() {
+    let person: Person = Person {
+        first_name: String::from("Abdillah"),
+        last_name: String::from("Kim"),
+        age: 21,
+        is_marige: false,
+    };
+
+    // jika kita ingin membaut instance person lagi namun kita ingin isinya sama seprti instance person sebelumnya maka kita bisa
+    // menggunakan update sintax struct(mirp kayak destructuring)
+    let person_2: Person = Person { ..person };
+    // namun jikalau kita melakukan hal tersebut perlu berhati2 karena untuk data yang disimpan di Heap makan akan berpindah ownership nya
+    // jikalau gamau pindah ya harus di clone
+
+    let person_3: Person = Person {
+        first_name: person_2.first_name.clone(), // melakukan clone agar ownersip nya ga berubah
+        last_name: person_2.first_name.clone(),
+        ..person_2
+    };
+
+    println!("person 2 {}", person_2.first_name);
+    println!("person 2 {}", person_2.last_name);
+    println!("person 2 {}", person_2.age);
+    println!("person 2 {}", person_2.is_marige);
+
+    println!("person 3 {}", person_3.first_name);
+    println!("person 3 {}", person_3.last_name);
+    println!("person 3 {}", person_3.age);
+    println!("person 3 {}", person_3.is_marige);
+}
+
+struct Person {
+    first_name: String,
+    last_name: String,
+    age: u16,
+    is_marige: bool,
+}
+
+impl Person {
+    fn say_hello(&self, name: &str) {
+        println!("hello {} my name is {}", name, self.first_name);
+    }
+}
+#[test]
+fn method() {
+    let person: Person = Person {
+        first_name: String::from("Abdillah"),
+        last_name: String::from("Kim"),
+        age: 21,
+        is_marige: false,
+    };
+    person.say_hello("Iszrail");
+}
+
+
+#[test]
+fn tuple_struct() {
+    let geopoint: GeoPoint = GeoPoint(1203.0231203, -0391.231324);
+    println!("longnitude :{:?}", geopoint.0);
+    println!("latitude: {:?}", geopoint.1);
+}
+
+struct GeoPoint(f64, f64);
+
+
+struct Noting;
+
+#[test]
+fn test_noting() {
+    let _noting: Noting = Noting;
+}
+
+struct GeoLocation(f64, f64);
+impl GeoLocation {
+    fn new(long: f64, lat: f64) -> GeoLocation {
+        GeoLocation(long, lat)
+    }
+}
+
+#[test]
+fn associations_function() {
+    let geolocation: GeoLocation = GeoLocation::new(0213.129321, -2392.1231243);
+    println!("long: {}", geolocation.0);
+    println!("lat: {}", geolocation.1);
+}
+
+
+enum Level {
+    HARD,
+    MEDIUM,
+    EASY
+}
+
+#[test]
+fn enum_test() {
+    let _level: Level = Level::EASY;
 }

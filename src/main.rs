@@ -891,3 +891,16 @@ fn test_else_matching() {
         }
     }
 }
+
+#[test]
+fn test_matching() {
+    let name: &str = "Kim";
+    match name {
+        "Kim" | "Abdillah" => {
+            println!("Hallo {} Mas mas kaya, Investor sukses", name);
+        },
+        other_name => {
+            println!("Anda Orang miskin {}", other_name)
+        }
+    }
+}

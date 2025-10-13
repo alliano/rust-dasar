@@ -1547,3 +1547,20 @@ fn test_else_matching() {
     }
 }
 ```
+## Multiple Patterns
+Pattern matching bisa beberapa kondisi, caranya cukup mudah. gunakan saja simbol pipe(|) lalu diikuti value yang lain.
+``` rust
+#[test]
+fn test_matching() {
+    let name: &str = "Kim";
+    match name {
+        // ini artinya jikalau variabel nama itu isinya Kim atau Abdillah maka akan match ke pattern ini
+        "Kim" | "Abdillah" => {
+            println!("Hallo {} Mas mas kaya, Investor sukses", name);
+        },
+        other_name => {
+            println!("Anda Orang miskin {}", other_name)
+        }
+    }
+}
+```

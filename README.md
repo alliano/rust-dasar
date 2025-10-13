@@ -1583,3 +1583,152 @@ fn descticturing_struct_matching() {
     }
 }
 ```
+
+## Match Expression
+Sebelumnya kita sudah menggunakan matching tapi tidak mengembaikan return value, match expression dapat menggembalikan return value jikalau kita mau dan kita bisa tampung di variabel.
+``` rust
+#[test]
+fn match_expression() {
+    let age: u32 = 100;
+    let result = match age {
+        0..=15 => {
+            "Boy"
+        },
+        16..=23 => {
+            "Adult"
+        },
+        24..=70 => {
+            "Man"
+        },
+        _ => {
+            "Mayat"
+        }
+    };
+
+    println!("{}", result);
+}
+```
+
+## Alias
+Ketika kita membangun software yang kompleks terkadang kita membutuhkan Alias(nama lain) dari tipe data yang sudah ada. Hal tersebut biasanya dilakukan agar lebih mendeskripsikan data yang digunakan. Hal tersebut dapat kita lakukan di Rust dengan cara membuat type.
+``` rust
+// membuat alias
+type Age = u8;
+type IdentityNumber = String;
+
+struct Customer {
+    identity_number: IdentityNumber,
+    age: Age,
+    name: String
+}
+
+#[test]
+fn alias() {
+    let custormer: Customer = Customer {
+        age: 22,
+        identity_number: String::from("1239123817238192"),
+        name: String::from("Abdillah Kim")
+    };
+
+    match custormer {
+        Customer {age, identity_number, name} => println!("age: {}\nname: {}\nidentity_number: {}\n", age, identity_number, name)
+    }
+}
+```
+
+## Module
+Ketika memngembangkan applikasi yang kompleks tentunya kode kita akan banyak, alangkah merepotkan jikalalau kode kita tertempuk menjadi satu.  
+Rust memiliki feature `Module` yang memungkinkan kita untuk memisahkan dan mengorganisir kode program kita. dengan demikian kode kita akan menjadi rapih dan mudah di maintanance.
+
+Unutk membuat module kita bisa menggunakan keyword `mod` setelah itu diikuti dengan nama modul nya.
+
+``` rust
+mod model {
+    // pub adalah keyword visibility agar struct User dapat diakses dari luar modul
+    pub struct User {
+        pub first_name: String,
+        pub last_name: String,
+        pub age: u8,
+        pub nick_name: String
+    }
+
+    impl User {
+        pub fn say_hello(&self, name: &str) {
+            println!("hello {} my name is {}", name, self.nick_name);
+        }
+    }
+}
+```
+
+``` rust
+#[test]
+fn module() {
+    let user: model::User = model::User {
+        first_name: String::from("Abdillah"),
+        last_name: String::from("Kim"),
+        age: 22,
+        nick_name: String::from("Alliano")
+    };
+
+    user.say_hello("Jochcowi");
+}
+```
+
+## use keyword
+Sebelumnya ketika kita menggunakan modul kita harus menyebutkan nama modul nya sebelum menggunakan `method`, `struct` dan lain-lain yang ada didalam modul. Sebenarnya kita bisa langsung mengakses `method`, `struct` dan lain-lain yang ada didalam modul. Untuk melakukan hal tersebut kita bisa menggunakan keyword `use` setelah itu diikui nama modul nya dan untuk mengakses member nya kita bisa menggunakan titk ganda 2x(::)
+``` rust
+mod foo {
+    pub fn say_hello(name: &str) {
+        println!("Hello {}", name);
+    }
+}
+
+mod bar {
+    pub fn say_hello(name: &str) {
+        println!("hello {}", name)
+    }
+}
+
+// mengakses method say_hello yang ada pada modul foo
+use foo::say_hello;
+// membuat alias method say_hello dari bar
+use bar::say_hello as say_hello_second;
+
+#[test]
+fn feature() {
+    say_hello("Alliano");
+    say_hello_second("Abdillah Kim");
+}
+```
+## Module pada file terpisah
+Sebelumnya kita sudah mencoba memisahkan dan mengorganisir baris kode rust kita menggunakan module, namun ketika applikasi yang kita develop menjadi lebih besar dan kompleks dan pastinya akan menyusahkan kita jikalau semua kode kita hanya berada pada 1 file.  
+Pada Rust kita bisa memisahkan kode program kita di file lain, dan secara ototmatis nama file akan menjadi nama module dan kita tidak perlu menambahkan keyword mod. 
+  
+**foo.rs**
+``` rust
+pub fn say_hello(name: &str) {
+    println!("hello {}", name);
+}
+```
+
+**bar.rs**
+``` rust
+pub fn say_hello(name: &str) {
+    println!("hello {}", name);
+}
+```
+Unutk load kode program dari file terpisah kita bisa menggunakan keyword mod dan diikuiti nama file nya tampa extensi.  
+**main.rs**
+``` rust
+mod foo;
+mod bar;
+
+use foo::say_hello;
+use bar::say_hello as say_hello_second;
+
+#[test]
+fn feature() {
+    say_hello("Alliano");
+    say_hello_second("Abdillah");
+}
+```

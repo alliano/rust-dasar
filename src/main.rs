@@ -956,3 +956,102 @@ fn descticturing_struct_matching() {
         }
     }
 }
+
+#[test]
+fn match_expression() {
+    let age: u32 = 100;
+    let result = match age {
+        0..=15 => {
+            "Boy"
+        },
+        16..=23 => {
+            "Adult"
+        },
+        24..=70 => {
+            "Man"
+        },
+        _ => {
+            "Mayat"
+        }
+    };
+
+    println!("{}", result);
+}
+
+
+type Age = u8;
+type IdentityNumber = String;
+
+struct Customer {
+    identity_number: IdentityNumber,
+    age: Age,
+    name: String
+}
+
+#[test]
+fn alias() {
+    let custormer: Customer = Customer {
+        age: 22,
+        identity_number: String::from("1239123817238192"),
+        name: String::from("Abdillah Kim")
+    };
+
+    match custormer {
+        Customer {age, identity_number, name} => println!("age: {}\nname: {}\nidentity_number: {}\n", age, identity_number, name)
+    }
+}
+
+
+mod model {
+    pub struct User {
+        pub first_name: String,
+        pub last_name: String,
+        pub age: u8,
+        pub nick_name: String
+    }
+
+    impl User {
+        pub fn say_hello(&self, name: &str) {
+            println!("hello {} my name is {}", name, self.nick_name);
+        }
+    }
+}
+
+#[test]
+fn module() {
+    let user: model::User = model::User {
+        first_name: String::from("Abdillah"),
+        last_name: String::from("Kim"),
+        age: 22,
+        nick_name: String::from("Alliano")
+    };
+
+    user.say_hello("Jochcowi");
+}
+
+
+
+
+// mod foo {
+//     pub fn say_hello(name: &str) {
+//         println!("Hello {}", name);
+//     }
+// }
+
+// mod bar {
+//     pub fn say_hello(name: &str) {
+//         println!("hello {}", name)
+//     }
+// }
+
+mod foo;
+mod bar;
+
+use foo::say_hello;
+use bar::say_hello as say_hello_second;
+
+#[test]
+fn feature() {
+    say_hello("Alliano");
+    say_hello_second("Abdillah");
+}

@@ -904,3 +904,39 @@ fn test_matching() {
         }
     }
 }
+
+#[test]
+fn matching_range() {
+    let age:u128 = 22;
+
+    match age {
+        1..=15 => {
+            println!("Boy")
+        },
+        16..=23 => {
+            println!("Adult")
+        },
+        17..=70 => {
+            println!("Man")
+        },
+        _other_age => {
+            println!("Sepuh")
+        }
+    }
+}
+
+#[test]
+fn tuple_strut_destructuring() {
+    let geo_location: GeoLocation = GeoLocation::new(0.0, 1.00);
+    match geo_location {
+        GeoLocation(long, 0.0) => {
+            println!("long {}", long);
+        },
+        GeoLocation(0.0, lat) => {
+            println!("lat {}", lat);
+        },
+        GeoLocation(long, lat) => {
+            println!("long {} lat {}", long, lat);
+        }
+    }
+}

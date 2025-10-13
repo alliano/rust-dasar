@@ -767,7 +767,6 @@ fn method() {
     person.say_hello("Iszrail");
 }
 
-
 #[test]
 fn tuple_struct() {
     let geopoint: GeoPoint = GeoPoint(1203.0231203, -0391.231324);
@@ -776,7 +775,6 @@ fn tuple_struct() {
 }
 
 struct GeoPoint(f64, f64);
-
 
 struct Noting;
 
@@ -799,14 +797,54 @@ fn associations_function() {
     println!("lat: {}", geolocation.1);
 }
 
-
 enum Level {
     HARD,
     MEDIUM,
-    EASY
+    EASY,
 }
 
 #[test]
 fn enum_test() {
-    let _level: Level = Level::EASY;
+    let _level_1: Level = Level::EASY;
+    let _level_2: Level = Level::MEDIUM;
+    let _level_3: Level = Level::HARD;
+}
+
+enum Payment {
+    Ewallet(String),
+    BankTranfer(String, String),
+    CreditCard(String, String),
+}
+
+impl Payment {
+    fn pay(&self, amount: u64) {
+        println!("success fully pay ${}", amount);
+    }
+}
+
+#[test]
+fn enum_data() {
+    let _payment_method: Payment = Payment::BankTranfer(String::from("BRI"), String::from("03432832"));
+    let _payment_method_2: Payment = Payment::CreditCard(String::from("ASD"), String::from("ASD"));
+    let _payment_method_3: Payment = Payment::Ewallet(String::from("ASD"));
+    _payment_method.pay(1000000);
+}
+
+
+
+#[test]
+fn enum_matching() {
+    let level: Level = Level::MEDIUM;
+
+    match level {
+        Level::EASY => {
+            println!("User choose Easy level");
+        },
+        Level::HARD => {
+            println!("User choose Hard level");
+        },
+        Level::MEDIUM => {
+            println!("User choose Medium level");
+        }
+    }
 }

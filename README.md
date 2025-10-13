@@ -1427,4 +1427,47 @@ enum Level {
 fn enum_test() {
     let _level: Level = Level::EASY;
 }
+```  
+
+## Enum Data
+Pada tipe data enum kita juga bisa mendefinisikan value dari tiap-tiap field enum dengan cara menambahkan parameter pada field nya. dan ketika membuat instance nya kita cukup sebutkan saja.
+
+``` rust
+enum Payment {
+    Ewallet(String),
+    BankTranfer(String, String),
+    CreditCard(String, String),
+}
+
+#[test]
+fn enum_data() {
+    let _payment_method: Payment = Payment::BankTranfer(String::from("BRI"), String::from("03432832"));
+    let _payment_method_2: Payment = Payment::CreditCard(String::from("ASD"), String::from("ASD"));
+    let _payment_method_3: Payment = Payment::Ewallet(String::from("ASD"));
+}
 ```
+
+## Enum method
+seperti tipe data struct, Enum juga bisa kita tambahkan sebuah method
+``` rust
+impl Payment {
+    fn pay(&self, amount: u64) {
+        println!("success fully pay ${}", amount);
+    }
+}
+
+enum Payment {
+    Ewallet(String),
+    BankTranfer(String, String),
+    CreditCard(String, String),
+}
+
+#[test]
+fn enum_data() {
+    let _payment_method: Payment = Payment::BankTranfer(String::from("BRI"), String::from("03432832"));
+    _payment_method.pay(100000);
+}
+
+## Pattren matching
+
+``` rust

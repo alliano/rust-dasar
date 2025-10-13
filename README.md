@@ -1467,7 +1467,83 @@ fn enum_data() {
     let _payment_method: Payment = Payment::BankTranfer(String::from("BRI"), String::from("03432832"));
     _payment_method.pay(100000);
 }
+```
 
-## Pattren matching
-
+## Pattren Matching
+Ketika kita menggunakan tipe data enum dan kita ingin meperiksa tipe enum tersebut kita tidak bisa menggunakan branching `if` seperti biasanya. Pada bahasa pemrogramman Rust, unutuk melakukan pegecekan sebuah enum itu menggunakan `Pattern Matching`. Cara menggunakan `pattern matching` cukuplah sederhana hanya gunakan keyword `match` dan diikuti data enum nya.  
 ``` rust
+#[test]
+fn enum_matching() {
+    let level: Level = Level::MEDIUM;
+
+    match level {
+        Level::EASY => {
+            println!("User choose Easy level");
+        },
+        Level::HARD => {
+            println!("User choose Hard level");
+        },
+        Level::MEDIUM => {
+            println!("User choose Medium level");
+        }
+    }
+}
+```
+
+## Desctucturing Enum Data Pattern
+Patern matching juga bisa kita gunakan untuk menggambil data yang terdapat pada instance enum nya. caranya cukup mudah kita bisa tambahkan saja sebuah method dan pada pattern matching nya kita sebutkan parameter-parameternya.
+``` rust
+enum Payment {
+    Ewallet(String),
+    BankTranfer(String, String),
+    CreditCard(String, String),
+}
+
+impl Payment {
+    // self disini merujuk pada instance dari Payment
+    fn pay_v2(&self, amount: u128) {
+        match self {
+            Payment::BankTranfer(bank, no_rek) => {
+                println!("success fully paied ${} with bank {} {}", amount, bank, no_rek);
+            },
+            Payment::CreditCard(credit, no_credit) => {
+                println!("success fully paid ${} with credit {} {}", amount, credit, no_credit);
+            },
+            Payment::Ewallet(number) => {
+                println!("success fully paid ${} with ewallet {}", amount, number);
+            }
+        }
+    }
+}
+
+#[test]
+fn destructuring_enum_patterens() {
+    let payment_method: Payment = Payment::BankTranfer(String::from("BRI"), String::from("009932434803248024"));
+    payment_method.pay_v2(100000);
+}
+```
+
+## Pattern Matching value
+Selain untuk mengecek sebuah enum pattern matching juga bisa kita gunakan unutuk mengecek value seperti `string`, `number` dll.
+dan jikalau dari kondisi-kondisi yang kita buat tidak ada yang match maka kita bisa buatkan sebuah variabel untuk menampung data yang tidak match tersebut(ini sama seperti elese di operasi branching).
+``` rust
+#[test]
+fn test_else_matching() {
+    let name: &str = "Abdillah Kim";
+    match name {
+        "Abdillah Kim" => {
+            println!("1. my name is {}", name);
+        },
+        "Alliano" => {
+            println!("2. my name is {}", name);
+        },
+        "Orang Kaya" => {
+            println!("3. my name is {}", name);
+        },
+        // jikalau tidak ada yang match
+        other_name => {
+            println!("4. other name {}", other_name);
+        }
+    }
+}
+```

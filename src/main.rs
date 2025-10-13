@@ -848,3 +848,46 @@ fn enum_matching() {
         }
     }
 }
+
+
+impl Payment {
+    fn pay_v2(&self, amount: u128) {
+        match self {
+            Payment::BankTranfer(bank, no_rek) => {
+                println!("success fully paied ${} with bank {} {}", amount, bank, no_rek);
+            },
+            Payment::CreditCard(credit, no_credit) => {
+                println!("success fully paid ${} with credit {} {}", amount, credit, no_credit);
+            },
+            Payment::Ewallet(number) => {
+                println!("success fully paid ${} with ewallet {}", amount, number);
+            }
+        }
+    }
+}
+
+#[test]
+fn destructuring_enum_patterens() {
+    let payment_method: Payment = Payment::BankTranfer(String::from("BRI"), String::from("009932434803248024"));
+    payment_method.pay_v2(100000);
+}
+
+
+#[test]
+fn test_else_matching() {
+    let name: &str = "Abdillah Kim";
+    match name {
+        "Abdillah Kim" => {
+            println!("1. my name is {}", name);
+        },
+        "Alliano" => {
+            println!("2. my name is {}", name);
+        },
+        "Orang Kaya" => {
+            println!("3. my name is {}", name);
+        },
+        other_name => {
+            println!("4. other name {}", other_name);
+        }
+    }
+}

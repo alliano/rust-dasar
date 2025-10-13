@@ -926,7 +926,7 @@ fn matching_range() {
 }
 
 #[test]
-fn tuple_strut_destructuring() {
+fn tuple_struct_destructuring() {
     let geo_location: GeoLocation = GeoLocation::new(0.0, 1.00);
     match geo_location {
         GeoLocation(long, 0.0) => {
@@ -937,6 +937,22 @@ fn tuple_strut_destructuring() {
         },
         GeoLocation(long, lat) => {
             println!("long {} lat {}", long, lat);
+        }
+    }
+}
+
+#[test]
+fn descticturing_struct_matching() {
+    let person: Person = Person {
+        first_name: String::from("Abdillah"),
+        last_name: String::from("Kim"),
+        is_marige: false,
+        age: 22
+    };
+
+    match person {
+        Person {first_name, last_name, ..} => {
+            println!("first name: {} \nlast name: {}", first_name, last_name);
         }
     }
 }

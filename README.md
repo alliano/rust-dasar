@@ -1564,3 +1564,22 @@ fn test_matching() {
     }
 }
 ```
+
+## Destructuring Struct
+``` rust
+#[test]
+fn descticturing_struct_matching() {
+    let person: Person = Person {
+        first_name: String::from("Abdillah"),
+        last_name: String::from("Kim"),
+        is_marige: false,
+        age: 22
+    };
+
+    match person {
+        Person {first_name, last_name, ..} => {
+            println!("first name: {} \nlast name: {}", first_name, last_name);
+        }
+    }
+}
+```

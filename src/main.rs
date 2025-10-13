@@ -1046,6 +1046,7 @@ fn module() {
 
 mod foo;
 mod bar;
+mod foo_bar;
 
 use foo::say_hello;
 use bar::say_hello as say_hello_second;
@@ -1054,4 +1055,9 @@ use bar::say_hello as say_hello_second;
 fn feature() {
     say_hello("Alliano");
     say_hello_second("Abdillah");
+}
+
+#[test]
+fn create_keyword() {
+    foo_bar::foo_bar("Alliano");
 }

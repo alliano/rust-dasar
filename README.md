@@ -1732,3 +1732,47 @@ fn feature() {
     say_hello_second("Abdillah");
 }
 ```
+
+
+
+## Create keyword
+Ketika kita ingin meload file bukan dari main module maka kita tidak bisa menggunakna keyword `mod`. untuk meload file dari module kita harus menggunakna user dan diikuiti keyword `create::` setelah itu kita sebutkan nama file nya.
+**foo.rs**
+``` rust
+pub fn say_hello(name: &str) {
+    println!("hello {}", name);
+}
+```
+
+**bar.rs**
+``` rust
+pub fn say_hello(name: &str) {
+    println!("hello {}", name);
+}
+```
+Disini kita tidak menggunakan `mod` tapi menggunakan use dan diikuiti dengan keyword `create::` setelah itu nama file yang ingin kita load
+
+``` rust
+// gunakan keyword create
+use crate::bar::say_hello;
+use crate::foo::say_hello as say_hello_foo;
+
+pub fn foo_bar(name: &str) {
+    say_hello(name);
+    say_hello_foo(name);
+    println!("from foo_bar.rs")
+}
+
+```
+**main.rs**
+``` rust
+mod foo;
+mod bar;
+// disini kita sebutkan dulu foo_bar agar di load oleh Rust compiler nya
+mod foo_bar;
+
+#[test]
+fn create_keyword() {
+    foo_bar::foo_bar("Alliano");
+}
+```

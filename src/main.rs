@@ -1061,3 +1061,60 @@ fn feature() {
 fn create_keyword() {
     foo_bar::foo_bar("Alliano");
 }
+
+
+#[test]
+fn super_keyword() {
+    foo_bar::foo_bar_v2_mdl::bar::hello("Abdillah Kim");
+    foo_bar::foo_bar_v3_mdl::foo::hello("Alliano");
+}
+
+trait Animal {
+    fn sound(&self, sound: &str) -> String;
+    fn leg(&self) -> u8;
+}
+
+struct Cow {
+    name: String
+}
+struct Cat {
+    name: String
+}
+
+impl Animal for Cow {
+
+    fn sound(&self, sound: &str) -> String {
+        format!("im {} my sound is {}", self.name, sound)
+    }
+
+    fn leg(&self) -> u8 {
+        4
+    }
+}
+
+impl Animal for Cat {
+    fn sound(&self, sound: &str) -> String {
+        format!("im {}, my sound is {}", self.name, sound)
+    }
+
+    fn leg(&self) -> u8 {
+        4
+    }
+}
+
+#[test]
+fn trait_test() {
+    let cow: Cow = Cow { name: String::from("Cow") };
+    let cat: Cat = Cat { name: String::from("Cat") };
+
+    let cow_sound = cow.sound("Mooooooo");
+    let cat_sound = cat.sound("Miauuuu");
+
+    let cow_leg = cow.leg();
+    let cat_leg = cat.leg();
+
+    println!("{}", cow_sound);
+    println!("{}", cat_sound);
+    println!("cat have {} legs", cat_leg);
+    println!("cow have {} legs", cow_leg);
+}

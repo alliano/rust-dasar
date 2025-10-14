@@ -1776,3 +1776,133 @@ fn create_keyword() {
     foo_bar::foo_bar("Alliano");
 }
 ```
+
+## Super Keyword
+Saat kita membuat Nested Module, terkadang kita ingin mengakses modul diatasnya. Untuk melakukan hal tersebut sebenarnya ada 2 cara:
+- menggunakan `create`
+- menggunakan `super`
+
+### enggunakan super
+**foo_bar.rs**
+``` rust
+use crate::bar::say_hello;
+use crate::foo::say_hello as say_hello_foo;
+
+pub fn foo_bar(name: &str) {
+    say_hello(name);
+    say_hello_foo(name);
+    println!("from foo_bar.rs")
+}
+
+
+pub mod foo_bar_v2_mdl {
+    pub mod bar {
+        pub fn hello(name: &str) {
+            /*
+             * Setiap kita sebutkan super 1x artinya akses akan naik 1 tingkat
+             * disini kita sebutkan 2x super artinya naik 2 tingkat dan mengakses 
+             * function foo_bar
+             */
+            super::super::foo_bar(name);
+        }
+    }
+}
+```
+### Menggunakan create
+**foo_bar.rs**
+``` rust
+use crate::bar::say_hello;
+use crate::foo::say_hello as say_hello_foo;
+
+pub fn foo_bar(name: &str) {
+    say_hello(name);
+    say_hello_foo(name);
+    println!("from foo_bar.rs")
+}
+
+pub mod foo_bar_v3_mdl {
+    pub mod foo {
+        pub fn hello(name: &str) {
+            /*
+             * Jikalau menggunakna create ini sedikit berbeda. kita haus sebutkan 
+             * nama modul/file nya terlebih dahulu setelah itu baru bisa 
+             * langsung mengakses funcion foo_bar nya. 
+             */
+            crate::foo_bar::foo_bar(name);
+        }
+    }
+}
+```
+
+**main.rs**
+``` rust
+mod foo_bar;
+
+#[test]
+fn super_keyword() {
+    foo_bar::foo_bar_v2_mdl::bar::hello("Abdillah Kim");
+    foo_bar::foo_bar_v3_mdl::foo::hello("Alliano");
+}
+```
+
+## Trait
+Trait adalah fungsionalitas untuk tipe data lain. Biasanya Trait digunakan untuk dasar dari beberapa implementasi tipe data `struct` atau `enum`. Pada bahasa pemrogramman lain yang berorenteasi object `trait` ini mirip seperti `interface`. Jadi isi dari trait hanyalah definisi method/function tampa implementasi kongkrit.  
+Untuk membuat trait kita bisa menggunakan keyword `trait` setelah itu diikuti Nama trait nya. 
+``` rust
+// Animal adalah nama trait nya
+trait Animal {
+    fn sound(&self, sound: &str) -> String;
+    fn leg(&self) -> u8;
+}
+
+struct Cow {
+    name: String
+}
+struct Cat {
+    name: String
+}
+```
+
+Untuk implementasikan `trait` kita bisa gunakan keyword `for` setelah itu nama type nya
+``` rust
+impl Animal for Cow {
+
+    fn sound(&self, sound: &str) -> String {
+        format!("im {} my sound is {}", self.name, sound)
+    }
+
+    fn leg(&self) -> u8 {
+        4
+    }
+}
+
+impl Animal for Cat {
+    fn sound(&self, sound: &str) -> String {
+        format!("im {}, my sound is {}", self.name, sound)
+    }
+
+    fn leg(&self) -> u8 {
+        4
+    }
+}
+```
+
+``` rust
+#[test]
+fn trait_test() {
+    let cow: Cow = Cow { name: String::from("Cow") };
+    let cat: Cat = Cat { name: String::from("Cat") };
+
+    let cow_sound = cow.sound("Mooooooo");
+    let cat_sound = cat.sound("Miauuuu");
+
+    let cow_leg = cow.leg();
+    let cat_leg = cat.leg();
+
+    println!("{}", cow_sound);
+    println!("{}", cat_sound);
+    println!("cat have {} legs", cat_leg);
+    println!("cow have {} legs", cow_leg);
+
+}
+```

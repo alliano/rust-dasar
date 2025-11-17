@@ -1906,3 +1906,157 @@ fn trait_test() {
 
 }
 ```
+
+## Trait As Parameter
+Salah satu kelebihan menggunakan trait adalah kita bisa menggunakan trait sebagai parameter. ketika kita menggunakan trait sebagai parameter kita bisa bebas menggunakan value, method/function yang implementasi trait tersebut. Untuk menggunakna trait sebgai parameter kita bisa menggunaka keyword `impl` setelah itu diikuti nama trait nya. Jikalau kita ingin parameter `trait` nya sebagai reference kita bisa tambahkan keuword `&` didepan `impl`, exp (`&impl`)
+
+
+``` rust
+struct Cow {
+    name: String
+}
+struct Cat {
+    name: String
+}
+
+impl Animal for Cow {
+
+    fn sound(&self, sound: &str) -> String {
+        format!("im {} my sound is {}", self.name, sound)
+    }
+
+    fn leg(&self) -> u8 {
+        4
+    }
+}
+
+impl Animal for Cat {
+    fn sound(&self, sound: &str) -> String {
+        format!("im {}, my sound is {}", self.name, sound)
+    }
+
+    fn leg(&self) -> u8 {
+        4
+    }
+}
+
+#[test]
+fn trait_test() {
+    let cow: Cow = Cow { name: String::from("Cow") };
+    let cat: Cat = Cat { name: String::from("Cat") };
+
+    let cow_sound = cow.sound("Mooooooo");
+    let cat_sound = cat.sound("Miauuuu");
+
+    let cow_leg = cow.leg();
+    let cat_leg = cat.leg();
+
+    println!("{}", cow_sound);
+    println!("{}", cow.can_eat());
+    println!("{}", cat_sound);
+    println!("{}", cat.can_eat());
+    
+    println!("cat have {} legs", cat_leg);
+    println!("cow have {} legs", cow_leg);
+}
+
+
+fn animal_sound(animal: &impl Animal) {
+    let result = animal.sound("MIAUUUUU");
+    println!("{}", result);
+}
+
+#[test]
+fn trait_as_param() {
+    let cat: Cat = Cat { name: String::from("Cat") };
+    animal_sound(&cat);
+}
+
+```
+
+## Multiple Trait
+type itu bisa melakukan implementasi lebih dari 1 trait olah karena itu ketika kita menggunakan trait sebagai parameter kita bisa menggunakan gabungan dari beberapa trait. untuk melakukan hal tersebut kita bisa menggunakan keyword `+` dan diikuti trait selanjutnya. Kalo kamu bingung gpp lets hand on
+
+
+``` rust
+struct Usr {
+    first_name: String,
+    last_name: String
+}
+
+trait CanSayHello {
+    fn hello(&self) -> String {
+        format!("Hello")
+    }
+
+    fn hello_from(&self, name: &str) -> String;
+}
+
+trait CanSayGoogBeye {
+    fn goog_beye(&self) -> String {
+        format!("Hello")
+    }
+
+    fn good_beye_from(&self, name: &str) -> String;
+}
+
+impl CanSayHello for Usr {
+    fn hello_from(&self, name: &str) -> String {
+        format!("Hello from {}", name)
+    }
+}
+
+impl CanSayGoogBeye for Usr {
+    fn good_beye_from(&self, name: &str) -> String {
+        format!("good beye from {}", name)
+    }
+}
+
+// yang aku maksud ini kita bisa menggunakan gabungan dari beberapa trait untuk parameter nya
+fn hello_googbeye(value: &(impl CanSayGoogBeye + CanSayHello)) {
+    println!("{}", value.hello_from("Kim"));
+    println!("{}", value.good_beye_from("Alliano"));
+}
+
+#[test]
+fn test_multiple_trait_impl_as_params() {
+    let usr: Usr = Usr { first_name: String::from("Abdillah"), last_name: String::from("Kim") };
+    hello_googbeye(&usr);
+}
+```
+
+## Retrun Trait
+Sebelumnya kita sudah membahas trait sebagai parameter. Hebatnya Trait juga bisa kita gunakan sebagai return value pada function. Namun seperti yang kita ketahui trait tidak bisa dibuat instance nya secara langsung(butuh implementasi). maka ketika kita menggunakan trait sebagai return value kita harus menggembalikan dalam bentuk implementasi dari trait tersebut.
+
+``` rust
+struct Usr2 {
+    first_name: String,
+    last_name: String,
+    age: u8
+}
+
+trait GoAhead {
+    
+    fn go(&self) -> String;
+}
+
+impl GoAhead for Usr2 {
+    fn go(&self) -> String {
+        format!("my name is {} and my age is {}, i will never give up", self.first_name, self.age)
+    }
+}
+
+fn trait_as_retrun_value(user: Usr2) -> impl GoAhead {
+    Usr2 {
+       first_name: user.first_name,
+       last_name: user.last_name,
+       age: user.age 
+    }
+}
+
+#[test]
+fn test_trait_as_return_value() {
+    let user = trait_as_retrun_value(Usr2 { first_name: String::from("Abdillah"), last_name: String::from("Kim"), age: 22 });
+    println!("{}", user.go());
+}
+```

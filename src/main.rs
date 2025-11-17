@@ -1,4 +1,4 @@
-use std::ops::Range;
+use std::{fmt::format, ops::Range};
 
 fn main() {
     println!("Hello, world!");
@@ -1072,6 +1072,9 @@ fn super_keyword() {
 trait Animal {
     fn sound(&self, sound: &str) -> String;
     fn leg(&self) -> u8;
+    fn can_eat(&self) -> bool {
+        true
+    }
 }
 
 struct Cow {
@@ -1114,7 +1117,101 @@ fn trait_test() {
     let cat_leg = cat.leg();
 
     println!("{}", cow_sound);
+    println!("{}", cow.can_eat());
     println!("{}", cat_sound);
+    println!("{}", cat.can_eat());
+    
     println!("cat have {} legs", cat_leg);
     println!("cow have {} legs", cow_leg);
+}
+
+
+fn animal_sound(animal: &impl Animal) {
+    let result = animal.sound("MIAUUUUU");
+    println!("{}", result);
+}
+
+#[test]
+fn trait_as_param() {
+    let cat: Cat = Cat { name: String::from("Cat") };
+    animal_sound(&cat);
+}
+
+
+
+
+struct Usr {
+    first_name: String,
+    last_name: String
+}
+
+trait CanSayHello {
+    fn hello(&self) -> String {
+        format!("Hello")
+    }
+
+    fn hello_from(&self, name: &str) -> String;
+}
+
+trait CanSayGoogBeye {
+    fn goog_beye(&self) -> String {
+        format!("Hello")
+    }
+
+    fn good_beye_from(&self, name: &str) -> String;
+}
+
+impl CanSayHello for Usr {
+    fn hello_from(&self, name: &str) -> String {
+        format!("Hello from {}", name)
+    }
+}
+
+impl CanSayGoogBeye for Usr {
+    fn good_beye_from(&self, name: &str) -> String {
+        format!("good beye from {}", name)
+    }
+}
+
+fn hello_googbeye(value: &(impl CanSayGoogBeye + CanSayHello)) {
+    println!("{}", value.hello_from("Kim"));
+    println!("{}", value.good_beye_from("Alliano"));
+}
+
+#[test]
+fn test_multiple_trait_impl_as_params() {
+    let usr: Usr = Usr { first_name: String::from("Abdillah"), last_name: String::from("Kim") };
+    hello_googbeye(&usr);
+}
+
+
+struct Usr2 {
+    first_name: String,
+    last_name: String,
+    age: u8
+}
+
+trait GoAhead {
+    
+    fn go(&self) -> String;
+}
+
+impl GoAhead for Usr2 {
+    fn go(&self) -> String {
+        format!("my name {} and my age is {}, i will never give up", self.first_name, self.age)
+    }
+}
+
+fn trait_as_retrun_value(user: Usr2) -> impl GoAhead {
+    Usr2 {
+       first_name: user.first_name,
+       last_name: user.last_name,
+       age: user.age 
+    }
+}
+
+#[test]
+fn test_trait_as_return_value() {
+    let user = trait_as_retrun_value(Usr2 { first_name: String::from("Abdillah"), last_name: String::from("Kim"), age: 22 });
+    println!("{}", user.go());
 }

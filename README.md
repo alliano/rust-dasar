@@ -1,11 +1,11 @@
 # BELAJAR RUST
 
-Siapin otak kelean yak **ASU**
+Siapin otak kelean yak **Gays**
 
 ## Requirement
 
 - sehat
-- punya otak
+- punya keinginan yang kuat untuk belajar
 - paham cara make komputer
 - punya pengalaman bahasa pemograman lain
 - dan yang paling penting **TIDAK GILA**

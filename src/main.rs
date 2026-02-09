@@ -1,4 +1,4 @@
-use std::{fmt::format, ops::Range};
+use std::{fmt::format, io::Seek, ops::Range};
 
 fn main() {
     println!("Hello, world!");
@@ -824,13 +824,12 @@ impl Payment {
 
 #[test]
 fn enum_data() {
-    let _payment_method: Payment = Payment::BankTranfer(String::from("BRI"), String::from("03432832"));
+    let _payment_method: Payment =
+        Payment::BankTranfer(String::from("BRI"), String::from("03432832"));
     let _payment_method_2: Payment = Payment::CreditCard(String::from("ASD"), String::from("ASD"));
     let _payment_method_3: Payment = Payment::Ewallet(String::from("ASD"));
     _payment_method.pay(1000000);
 }
-
-
 
 #[test]
 fn enum_matching() {
@@ -839,26 +838,31 @@ fn enum_matching() {
     match level {
         Level::EASY => {
             println!("User choose Easy level");
-        },
+        }
         Level::HARD => {
             println!("User choose Hard level");
-        },
+        }
         Level::MEDIUM => {
             println!("User choose Medium level");
         }
     }
 }
 
-
 impl Payment {
     fn pay_v2(&self, amount: u128) {
         match self {
             Payment::BankTranfer(bank, no_rek) => {
-                println!("success fully paied ${} with bank {} {}", amount, bank, no_rek);
-            },
+                println!(
+                    "success fully paied ${} with bank {} {}",
+                    amount, bank, no_rek
+                );
+            }
             Payment::CreditCard(credit, no_credit) => {
-                println!("success fully paid ${} with credit {} {}", amount, credit, no_credit);
-            },
+                println!(
+                    "success fully paid ${} with credit {} {}",
+                    amount, credit, no_credit
+                );
+            }
             Payment::Ewallet(number) => {
                 println!("success fully paid ${} with ewallet {}", amount, number);
             }
@@ -868,10 +872,10 @@ impl Payment {
 
 #[test]
 fn destructuring_enum_patterens() {
-    let payment_method: Payment = Payment::BankTranfer(String::from("BRI"), String::from("009932434803248024"));
+    let payment_method: Payment =
+        Payment::BankTranfer(String::from("BRI"), String::from("009932434803248024"));
     payment_method.pay_v2(100000);
 }
-
 
 #[test]
 fn test_else_matching() {
@@ -879,13 +883,13 @@ fn test_else_matching() {
     match name {
         "Abdillah Kim" => {
             println!("1. my name is {}", name);
-        },
+        }
         "Alliano" => {
             println!("2. my name is {}", name);
-        },
+        }
         "Orang Kaya" => {
             println!("3. my name is {}", name);
-        },
+        }
         other_name => {
             println!("4. other name {}", other_name);
         }
@@ -898,7 +902,7 @@ fn test_matching() {
     match name {
         "Kim" | "Abdillah" => {
             println!("Hallo {} Mas mas kaya, Investor sukses", name);
-        },
+        }
         other_name => {
             println!("Anda Orang miskin {}", other_name)
         }
@@ -907,18 +911,18 @@ fn test_matching() {
 
 #[test]
 fn matching_range() {
-    let age:u128 = 22;
+    let age: u128 = 22;
 
     match age {
         1..=15 => {
             println!("Boy")
-        },
+        }
         16..=23 => {
             println!("Adult")
-        },
+        }
         17..=70 => {
             println!("Man")
-        },
+        }
         _other_age => {
             println!("Sepuh")
         }
@@ -931,10 +935,10 @@ fn tuple_struct_destructuring() {
     match geo_location {
         GeoLocation(long, 0.0) => {
             println!("long {}", long);
-        },
+        }
         GeoLocation(0.0, lat) => {
             println!("lat {}", lat);
-        },
+        }
         GeoLocation(long, lat) => {
             println!("long {} lat {}", long, lat);
         }
@@ -947,11 +951,15 @@ fn descticturing_struct_matching() {
         first_name: String::from("Abdillah"),
         last_name: String::from("Kim"),
         is_marige: false,
-        age: 22
+        age: 22,
     };
 
     match person {
-        Person {first_name, last_name, ..} => {
+        Person {
+            first_name,
+            last_name,
+            ..
+        } => {
             println!("first name: {} \nlast name: {}", first_name, last_name);
         }
     }
@@ -961,23 +969,14 @@ fn descticturing_struct_matching() {
 fn match_expression() {
     let age: u32 = 100;
     let result = match age {
-        0..=15 => {
-            "Boy"
-        },
-        16..=23 => {
-            "Adult"
-        },
-        24..=70 => {
-            "Man"
-        },
-        _ => {
-            "Mayat"
-        }
+        0..=15 => "Boy",
+        16..=23 => "Adult",
+        24..=70 => "Man",
+        _ => "Mayat",
     };
 
     println!("{}", result);
 }
-
 
 type Age = u8;
 type IdentityNumber = String;
@@ -985,7 +984,7 @@ type IdentityNumber = String;
 struct Customer {
     identity_number: IdentityNumber,
     age: Age,
-    name: String
+    name: String,
 }
 
 #[test]
@@ -993,21 +992,27 @@ fn alias() {
     let custormer: Customer = Customer {
         age: 22,
         identity_number: String::from("1239123817238192"),
-        name: String::from("Abdillah Kim")
+        name: String::from("Abdillah Kim"),
     };
 
     match custormer {
-        Customer {age, identity_number, name} => println!("age: {}\nname: {}\nidentity_number: {}\n", age, identity_number, name)
+        Customer {
+            age,
+            identity_number,
+            name,
+        } => println!(
+            "age: {}\nname: {}\nidentity_number: {}\n",
+            age, identity_number, name
+        ),
     }
 }
-
 
 mod model {
     pub struct User {
         pub first_name: String,
         pub last_name: String,
         pub age: u8,
-        pub nick_name: String
+        pub nick_name: String,
     }
 
     impl User {
@@ -1023,14 +1028,11 @@ fn module() {
         first_name: String::from("Abdillah"),
         last_name: String::from("Kim"),
         age: 22,
-        nick_name: String::from("Alliano")
+        nick_name: String::from("Alliano"),
     };
 
     user.say_hello("Jochcowi");
 }
-
-
-
 
 // mod foo {
 //     pub fn say_hello(name: &str) {
@@ -1044,12 +1046,12 @@ fn module() {
 //     }
 // }
 
-mod foo;
 mod bar;
+mod foo;
 mod foo_bar;
 
-use foo::say_hello;
 use bar::say_hello as say_hello_second;
+use foo::say_hello;
 
 #[test]
 fn feature() {
@@ -1061,7 +1063,6 @@ fn feature() {
 fn create_keyword() {
     foo_bar::foo_bar("Alliano");
 }
-
 
 #[test]
 fn super_keyword() {
@@ -1078,14 +1079,13 @@ trait Animal {
 }
 
 struct Cow {
-    name: String
+    name: String,
 }
 struct Cat {
-    name: String
+    name: String,
 }
 
 impl Animal for Cow {
-
     fn sound(&self, sound: &str) -> String {
         format!("im {} my sound is {}", self.name, sound)
     }
@@ -1107,8 +1107,12 @@ impl Animal for Cat {
 
 #[test]
 fn trait_test() {
-    let cow: Cow = Cow { name: String::from("Cow") };
-    let cat: Cat = Cat { name: String::from("Cat") };
+    let cow: Cow = Cow {
+        name: String::from("Cow"),
+    };
+    let cat: Cat = Cat {
+        name: String::from("Cat"),
+    };
 
     let cow_sound = cow.sound("Mooooooo");
     let cat_sound = cat.sound("Miauuuu");
@@ -1120,11 +1124,10 @@ fn trait_test() {
     println!("{}", cow.can_eat());
     println!("{}", cat_sound);
     println!("{}", cat.can_eat());
-    
+
     println!("cat have {} legs", cat_leg);
     println!("cow have {} legs", cow_leg);
 }
-
 
 fn animal_sound(animal: &impl Animal) {
     let result = animal.sound("MIAUUUUU");
@@ -1133,16 +1136,15 @@ fn animal_sound(animal: &impl Animal) {
 
 #[test]
 fn trait_as_param() {
-    let cat: Cat = Cat { name: String::from("Cat") };
+    let cat: Cat = Cat {
+        name: String::from("Cat"),
+    };
     animal_sound(&cat);
 }
 
-
-
-
 struct Usr {
     first_name: String,
-    last_name: String
+    last_name: String,
 }
 
 trait CanSayHello {
@@ -1180,38 +1182,135 @@ fn hello_googbeye(value: &(impl CanSayGoogBeye + CanSayHello)) {
 
 #[test]
 fn test_multiple_trait_impl_as_params() {
-    let usr: Usr = Usr { first_name: String::from("Abdillah"), last_name: String::from("Kim") };
+    let usr: Usr = Usr {
+        first_name: String::from("Abdillah"),
+        last_name: String::from("Kim"),
+    };
     hello_googbeye(&usr);
 }
-
 
 struct Usr2 {
     first_name: String,
     last_name: String,
-    age: u8
+    age: u8,
 }
 
 trait GoAhead {
-    
     fn go(&self) -> String;
 }
 
 impl GoAhead for Usr2 {
     fn go(&self) -> String {
-        format!("my name {} and my age is {}, i will never give up", self.first_name, self.age)
+        format!(
+            "my name {} and my age is {}, i will never give up",
+            self.first_name, self.age
+        )
     }
 }
 
 fn trait_as_retrun_value(user: Usr2) -> impl GoAhead {
     Usr2 {
-       first_name: user.first_name,
-       last_name: user.last_name,
-       age: user.age 
+        first_name: user.first_name,
+        last_name: user.last_name,
+        age: user.age,
     }
 }
 
 #[test]
 fn test_trait_as_return_value() {
-    let user = trait_as_retrun_value(Usr2 { first_name: String::from("Abdillah"), last_name: String::from("Kim"), age: 22 });
+    let user = trait_as_retrun_value(Usr2 {
+        first_name: String::from("Abdillah"),
+        last_name: String::from("Kim"),
+        age: 22,
+    });
     println!("{}", user.go());
+}
+
+struct Human {
+    first_name: String,
+    last_name: String,
+    age: u32,
+    hobbie: String,
+}
+
+trait CanDo {
+    fn say_hello(&self, name: &str) -> String;
+}
+
+trait CanTalk {
+    fn say_hello(&self) -> String;
+}
+
+impl CanDo for Human {
+    fn say_hello(&self, name: &str) -> String {
+        format!("hello {}", name)
+    }
+}
+
+impl CanTalk for Human {
+    fn say_hello(&self) -> String {
+        format!("hello guys")
+    }
+}
+
+#[test]
+fn test_conflict_method() {
+    let human: Human = Human {
+        first_name: String::from("Abdillah"),
+        last_name: String::from("Kim"),
+        age: 22,
+        hobbie: String::from("Watching"),
+    };
+
+    /*
+     * Cara memanggil conflict method pada trait 
+     */
+    println!("{}", CanDo::say_hello(&human, "Abdillah"));
+
+    println!("{}", CanTalk::say_hello(&human));
+}
+
+
+
+struct Company {
+    name: String,
+    no_regist: String,
+    owner: String,
+    sector: String,
+    is_public: bool
+}
+
+trait Action {
+    fn buy_back_stoc(&self, amount: u64) -> String;
+
+    fn do_right_issue(&self, amount: u64) -> String;
+}
+
+trait Expandsion {
+    fn sector(&self, name: String) -> String;
+}
+
+trait Corporate: Action + Expandsion {
+    fn do_something(&self, example: String) -> String;
+}
+
+impl Expandsion for Company {
+    fn sector(&self, name: String) -> String {
+        format!("{}", name)
+    }
+}
+
+impl Action for Company {
+    fn buy_back_stoc(&self, amount: u64) -> String {
+        format!("company {} do buyback with amound {}", self.name, amount)
+    }
+
+    fn do_right_issue(&self, amount: u64) -> String {
+        format!("company {} do right issue {}", self.name, amount)
+    }
+}
+impl Corporate for Company {
+    fn do_something(&self, example: String) -> String {
+        format!("{}", example)
+    }
 }

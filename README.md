@@ -2060,3 +2060,54 @@ fn test_trait_as_return_value() {
     println!("{}", user.go());
 }
 ```
+## Conflict Method Name
+``` rust
+struct Human {
+    first_name: String,
+    last_name: String,
+    age: u32,
+    hobbie: String,
+}
+
+trait CanDo {
+    fn say_hello(&self, name: &str) -> String;
+}
+
+trait CanTalk {
+    fn say_hello(&self) -> String;
+}
+
+impl CanDo for Human {
+    fn say_hello(&self, name: &str) -> String {
+        format!("hello {}", name)
+    }
+}
+
+impl CanTalk for Human {
+    fn say_hello(&self) -> String {
+        format!("hello guys")
+    }
+}
+
+/*
+ * trait CantTalk dan CanDo memiliki nama method yang sama
+ * 
+ * */
+
+#[test]
+fn test_conflict_method() {
+    let human: Human = Human {
+        first_name: String::from("Abdillah"),
+        last_name: String::from("Kim"),
+        age: 22,
+        hobbie: String::from("Watching"),
+    };
+
+    /*
+     * Cara memanggil conflict method pada trait 
+     */
+    println!("{}", CanDo::say_hello(&human, "Abdillah"));
+
+    println!("{}", CanTalk::say_hello(&human));
+}
+```

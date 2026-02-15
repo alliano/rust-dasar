@@ -1352,6 +1352,7 @@ struct Point <T> {
     y: T,
 }
 
+
 #[test]
 fn test_generic_struct() {
     let p1: Point<f32> = Point { x: 1.0, y: 2.0 };
@@ -1441,4 +1442,33 @@ fn lg<T: PartialOrd>(v1: T, v2: T) -> T {
 fn test_generic_in_function() {
     let result: i32 = lg::<i32>(10, 20);
     println!("the largest value is {}", result);
+}
+
+
+
+/*
+ * ketika membuat generic pada method, kita bisa menambahkan generic setelah kata kunci impl dan secara otomatis generic tersebut bisa digunakan di semua method
+ * Atau jika kita ingin membuat generic pada method tertentu saja, kita bisa menambahkan generic setelah nama method maka secara otomatis generic tersebut hanya bisa digunakan pada method tersebut saja
+ * berikut ini adalah contoh penggunaan generic pada method yang mana tipe data dari x dan y bisa kita tentukan ketika kita membuat instance dari struct Point, dan kita juga bisa menggunakan generic tersebut pada method get_x() dan get_y() untuk mengembalikan nilai dari x dan y dengan tipe data yang sesuai dengan tipe data yang kita tentukan pada saat membuat instance dari struct Point 
+ */
+impl <T> Point<T> {
+    
+    pub fn get_x(&self) -> &T {
+        &self.x
+    }
+
+     pub fn get_y(&self) -> &T {
+        &self.y
+    }
+}
+
+
+#[test]
+fn test_generic_method() {
+    let point = Point::<i32>{
+        x: 10,
+        y: 20,
+    };
+
+    println!("x: {}, y: {}", point.get_x(), point.get_y());
 }

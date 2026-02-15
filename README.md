@@ -2378,3 +2378,60 @@ fn test_generic_in_function() {
 - `lg::<i32>(10, 20)` artinya kita memanggil function `lg` dengan menentukan tipe data `i32` untuk placeholder `T` nya menggunakan turbofish syntax (`::<>`). Sebenarnya kita juga bisa menuliskannya tanpa turbofish syntax menjadi `lg(10, 20)` karena Rust bisa mendeteksi tipe datanya secara otomatis dari value yang kita berikan.
 
 Dengan menggunakan generic pada function kita cukup membuat 1 function `lg` saja dan function tersebut bisa digunakan untuk berbagai macam tipe data seperti `i32`, `f64`, `i8` dan lain-lain selama tipe data tersebut mengimplementasikan trait `PartialOrd`.
+
+## Generic Method
+Sebelumnya kita sudah mempelajari generic pada function. Selain pada function, generic juga bisa kita gunakan pada method. Ketika membuat generic pada method, kita bisa menambahkan generic setelah kata kunci `impl` dan secara otomatis generic tersebut bisa digunakan di semua method yang ada didalam blok `impl` tersebut. Atau jikalau kita ingin membuat generic pada method tertentu saja, kita bisa menambahkan generic setelah nama method nya maka generic tersebut hanya bisa digunakan pada method tersebut saja.
+
+**Sintaks:**
+``` rust
+// generic pada impl, bisa digunakan di semua method
+impl<T> NamaStruct<T> {
+    fn nama_method(&self) -> &T {
+        // ...
+    }
+}
+```
+
+**Contoh:**
+``` rust
+struct Point<T> {
+    x: T,
+    y: T,
+}
+
+/*
+ * disini kita menambahkan generic T setelah keyword impl
+ * dengan begini generic T bisa digunakan di semua method yang ada didalam blok impl ini
+ * method get_x() dan get_y() mengembalikan reference dari field x dan y
+ * dengan tipe data yang sesuai dengan tipe data yang kita tentukan
+ * pada saat membuat instance dari struct Point
+ */
+impl<T> Point<T> {
+
+    pub fn get_x(&self) -> &T {
+        &self.x
+    }
+
+    pub fn get_y(&self) -> &T {
+        &self.y
+    }
+}
+
+#[test]
+fn test_generic_method() {
+    let point = Point::<i32> {
+        x: 10,
+        y: 20,
+    };
+
+    println!("x: {}, y: {}", point.get_x(), point.get_y());
+}
+```
+
+**Penjelasan kode:**
+- `impl<T> Point<T>` artinya kita membuat blok implementasi untuk struct `Point<T>` dengan generic type `T`. Generic `T` yang dideklarasikan setelah `impl` ini bisa digunakan oleh semua method yang ada didalam blok `impl` tersebut.
+- `pub fn get_x(&self) -> &T` artinya method `get_x` mengembalikan reference dari field `x` dengan tipe data `&T`. Jadi jikalau kita membuat instance `Point<i32>` maka `get_x()` akan mengembalikan `&i32`, begitu juga jikalau kita membuat instance `Point<f64>` maka `get_x()` akan mengembalikan `&f64`.
+- `pub fn get_y(&self) -> &T` sama seperti `get_x()` namun mengembalikan reference dari field `y`.
+- `Point::<i32> { x: 10, y: 20 }` artinya kita membuat instance `Point` dengan tipe data `i32` untuk placeholder `T` nya menggunakan turbofish syntax. Sehingga field `x` dan `y` bertipe `i32` dan method `get_x()` serta `get_y()` akan mengembalikan `&i32`.
+
+Dengan menggunakan generic pada method kita bisa membuat method yang fleksibel dan bisa menyesuaikan tipe data nya sesuai dengan tipe data yang kita tentukan ketika membuat instance dari struct tersebut.

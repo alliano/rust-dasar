@@ -2111,3 +2111,270 @@ fn test_conflict_method() {
     println!("{}", CanTalk::say_hello(&human));
 }
 ```
+
+## Super Trait (Trait Inheritance)
+Ketika kita membangun applikasi yang kompleks terkadang kita membutuhkan sebuah trait yang merupakan gabungan dari beberapa trait lain. Misalnya kita punya trait `Action` dan trait `Expansion`, lalu kita ingin membuat trait baru yang bernama `Corporate` yang mana trait `Corporate` ini mengharuskan siapapun yang mengimplementasikannya juga harus mengimplementasikan trait `Action` dan trait `Expansion`.
+
+Konsep ini disebut **Super Trait** atau **Trait Inheritance**. Untuk membuat super trait kita cukup gunakan tanda titik dua (`:`) setelah nama trait nya dan diikuti dengan trait-trait yang menjadi syaratnya. Jikalau lebih dari 1 trait kita bisa pisahkan dengan tanda `+`.
+
+**Sintaks:**
+``` rust
+trait NamaTrait: TraitSatu + TraitDua {
+    // method milik trait ini
+}
+```
+
+**Contoh:**
+``` rust
+struct Company {
+    name: String,
+    no_regist: String,
+    owner: String,
+    sector: String,
+    is_public: bool
+}
+
+trait Action {
+    fn buy_back_stock(&self, amount: u64) -> String;
+    fn do_right_issue(&self, amount: u64) -> String;
+}
+
+trait Expansion {
+    fn sector(&self, name: String) -> String;
+}
+
+/*
+ * trait Corporate ini merupakan trait yang menggabungkan trait Action dan Expansion
+ * jadi ketika kita mengimplementasikan trait Corporate pada struct Company
+ * maka kita juga harus mengimplementasikan trait Action dan Expansion
+ */
+trait Corporate: Action + Expansion {
+    fn do_something(&self, example: String) -> String;
+}
+```
+
+Karena trait `Corporate` merupakan super trait dari `Action` dan `Expansion`, maka ketika kita mengimplementasikan trait `Corporate` pada struct `Company` kita juga **wajib** mengimplementasikan trait `Action` dan trait `Expansion`. Jikalau salah satu dari trait tersebut tidak diimplementasikan maka akan terjadi error pada saat kompilasi.
+
+``` rust
+impl Expansion for Company {
+    fn sector(&self, name: String) -> String {
+        format!("{}", name)
+    }
+}
+
+impl Action for Company {
+    fn buy_back_stock(&self, amount: u64) -> String {
+        format!("company {} do buyback with amound {}", self.name, amount)
+    }
+
+    fn do_right_issue(&self, amount: u64) -> String {
+        format!("company {} do right issue {}", self.name, amount)
+    }
+}
+
+/*
+ * ketika kita mengimplementasikan trait Corporate pada struct Company
+ * maka kita juga harus mengimplementasikan trait Action dan Expansion
+ * karena trait Corporate itu merupakan super trait dari Action dan Expansion
+ */
+impl Corporate for Company {
+    fn do_something(&self, example: String) -> String {
+        format!("{}", example)
+    }
+}
+```
+
+**Kesimpulan:**
+Super Trait memungkinkan kita untuk membuat sebuah trait yang bergantung pada trait lain. Dengan begitu ketika sebuah struct mengimplementasikan super trait tersebut, kita bisa yakin bahwa struct tersebut juga sudah mengimplementasikan semua trait yang menjadi syaratnya. Hal ini sangat berguna ketika kita ingin memastikan bahwa sebuah tipe data memiliki semua fungsionalitas yang dibutuhkan.
+
+## Generic
+Generic adalah feature dimana kita bisa membuat function, struct, enum, method, dan trait yang mana tipe datanya bisa kita tentukan ketika kita membuat instance nya. Feature ini sangat berguna ketika kita membuat kode yang generic atau general yang mana bisa digunakan untuk banyak tipe data. Dengan menggunakan generic kita bisa menghindari duplikasi kode yang sama untuk tipe data yang berbeda.
+
+Ketika kita membuat generic kita bisa menggunakan placeholder untuk tipe data nya, biasanya kita menggunakan huruf `T` untuk menandakan bahwa itu adalah placeholder untuk tipe data. Kita juga bisa menggunakan huruf lain seperti `U`, `V`, dll untuk menandakan placeholder untuk tipe data yang berbeda.
+
+**Sintaks:**
+``` rust
+// T disini adalah placeholder untuk tipe data yang akan ditentukan nanti
+fn nama_function<T>(param: T) -> T {
+    param
+}
+```
+
+## Generic Struct
+Selain pada function, generic juga bisa kita gunakan pada struct. Dengan begitu field-field pada struct bisa memiliki tipe data yang fleksibel dan ditentukan ketika kita membuat instance dari struct tersebut. Untuk membuat generic struct kita cukup tambahkan placeholder tipe data didalam tanda `<>` setelah nama struct nya.
+
+``` rust
+struct Point<T> {
+    x: T,
+    y: T,
+}
+
+#[test]
+fn test_generic_struct() {
+    let p1: Point<f32> = Point { x: 1.0, y: 2.0 };
+    let p2: Point<i32> = Point { x: 1, y: 2 };
+    println!("Point 1: ({}, {})", p1.x, p1.y);
+    println!("Point 2: ({}, {})", p2.x, p2.y);
+}
+```
+
+**Penjelasan kode:**
+- `struct Point<T>` artinya kita membuat struct `Point` dengan generic type `T`. Tipe data `T` ini akan ditentukan ketika kita membuat instance dari struct `Point`.
+- `x: T` dan `y: T` artinya field `x` dan `y` memiliki tipe data yang sama yaitu `T`. Jadi ketika kita menentukan `T` sebagai `f32` maka kedua field tersebut harus bertipe `f32`, begitu juga jikalau `T` nya `i32` maka kedua field nya harus bertipe `i32`.
+- `Point<f32>` artinya kita membuat instance `Point` dengan tipe data `f32` untuk placeholder `T` nya, sehingga `x` dan `y` bertipe `f32`.
+- `Point<i32>` artinya kita membuat instance `Point` dengan tipe data `i32` untuk placeholder `T` nya, sehingga `x` dan `y` bertipe `i32`.
+
+Dengan generic ini kita tidak perlu membuat struct `PointFloat` dan `PointInteger` secara terpisah. Cukup dengan 1 struct `Point<T>` kita sudah bisa menggunakan berbagai macam tipe data.
+
+## Generic Enum
+Selain pada struct, generic juga bisa kita gunakan pada enum. Dengan begitu value yang disimpan didalam variant enum bisa memiliki tipe data yang fleksibel dan ditentukan ketika kita membuat instance dari enum tersebut. Cara membuatnya sama seperti generic struct yaitu cukup tambahkan placeholder tipe data didalam tanda `<>` setelah nama enum nya.
+
+``` rust
+/*
+ * berikut ini adalah contoh penggunaan generic pada enum,
+ * kita membuat enum Value yang mana tipe data dari value
+ * bisa kita tentukan ketika kita membuat instance nya
+ */
+enum Value<T> {
+    SOME(T),
+    NONE,
+}
+
+#[test]
+fn test_generic_enum() {
+    let value1: Value<i32> = Value::<i32>::SOME(32);
+    let value2: Value<String> = Value::<String>::SOME(String::from("Hello"));
+    match value1 {
+        Value::SOME(val) => println!("Value 1: {}", val),
+        Value::NONE => println!("Value 1: None"),
+    }
+    match value2 {
+        Value::SOME(val) => println!("Value 2: {}", val),
+        Value::NONE => println!("Value 2: None"),
+    }
+}
+```
+
+**Penjelasan kode:**
+- `enum Value<T>` artinya kita membuat enum `Value` dengan generic type `T`. Tipe data `T` ini akan ditentukan ketika kita membuat instance dari enum `Value`.
+- `SOME(T)` artinya variant `SOME` menyimpan data dengan tipe `T`. Jadi ketika kita menentukan `T` sebagai `i32` maka data yang disimpan didalam `SOME` harus bertipe `i32`.
+- `NONE` adalah variant yang tidak menyimpan data apapun, variant ini tidak terpengaruh oleh generic type `T`.
+- `Value::<i32>::SOME(32)` artinya kita membuat instance enum `Value` dengan tipe data `i32` untuk placeholder `T` nya. Kita juga bisa menuliskannya tanpa turbofish syntax menjadi `Value::SOME(32)` karena Rust bisa mendeteksi tipe datanya secara otomatis dari value yang kita berikan.
+- Untuk mengambil data dari enum generic kita bisa menggunakan pattern matching seperti biasa.
+
+Sebenarnya konsep generic enum ini sudah sering kita gunakan tampa kita sadari. Contohnya tipe data `Option<T>` dan `Result<T, E>` yang merupakan enum bawaan dari Rust itu juga menggunakan generic.
+
+## Generic Bound (Trait Bound)
+Sebelumnya kita sudah mempelajari bagaimana cara menggunakan generic pada struct dan enum. Namun terkadang kita ingin membatasi tipe data apa saja yang boleh digunakan pada generic tersebut. Misalnya kita hanya ingin tipe data yang mengimplementasikan trait tertentu saja yang boleh digunakan pada generic. Untuk melakukan hal tersebut kita bisa menggunakan **Trait Bound** pada generic.
+
+Cara menggunakan trait bound cukup mudah, kita cukup tambahkan tanda titik dua (`:`) setelah placeholder generic nya lalu diikuti dengan nama trait nya. Misalnya `T: NamaTrait` artinya placeholder `T` hanya boleh diisi dengan tipe data yang mengimplementasikan trait `NamaTrait`.
+
+**Sintaks:**
+``` rust
+struct NamaStruct<T: NamaTrait> {
+    field: T,
+}
+```
+
+**Contoh:**
+``` rust
+trait CanFight {
+    fn power(&self) -> String;
+}
+
+struct SolarMan {
+    name: String,
+    demage: i16
+}
+
+impl CanFight for SolarMan {
+    fn power(&self) -> String {
+        format!("{} have power {}", self.name, self.demage)
+    }
+}
+
+/*
+ * disini kita memberi batasan pada generic T bahwa tipe data yang bisa digunakan
+ * pada generic ini adalah tipe data yang mengimplementasikan trait CanFight
+ * dengan begini kita bisa memastikan bahwa ketika kita membuat instance dari struct Hero
+ * maka tipe data yang kita gunakan pada generic T adalah tipe data yang mengimplementasikan
+ * trait CanFight, sehingga kita bisa menggunakan method power() pada tipe data tersebut
+ */
+struct Hero<T: CanFight> {
+    super_hero: T,
+}
+
+#[test]
+fn test_generic_bound() {
+    let solar: SolarMan = SolarMan {
+        name: String::from("SolarMan"),
+        demage: 100,
+    };
+    let hero: Hero<SolarMan> = Hero {
+        super_hero: solar,
+    };
+    println!("{} {}", hero.super_hero.name, hero.super_hero.power());
+}
+```
+
+**Penjelasan kode:**
+- `trait CanFight` adalah trait yang memiliki satu method yaitu `power()` yang mengembalikan `String`.
+- `struct SolarMan` adalah struct yang memiliki field `name` bertipe `String` dan `demage` bertipe `i16`.
+- `impl CanFight for SolarMan` artinya struct `SolarMan` mengimplementasikan trait `CanFight`, sehingga `SolarMan` bisa digunakan pada generic yang memiliki trait bound `CanFight`.
+- `struct Hero<T: CanFight>` artinya kita membuat struct `Hero` dengan generic type `T` yang dibatasi hanya untuk tipe data yang mengimplementasikan trait `CanFight`. Jadi kita tidak bisa membuat instance `Hero` dengan tipe data yang tidak mengimplementasikan trait `CanFight`.
+- `Hero { super_hero: solar }` artinya kita membuat instance `Hero` dengan tipe data `SolarMan` untuk placeholder `T` nya. Hal ini bisa dilakukan karena `SolarMan` sudah mengimplementasikan trait `CanFight`.
+- Jikalau kita mencoba membuat instance `Hero` dengan tipe data yang tidak mengimplementasikan trait `CanFight` maka akan terjadi error pada saat kompilasi.
+
+Dengan menggunakan trait bound pada generic kita bisa memastikan bahwa tipe data yang digunakan pada generic adalah tipe data yang sesuai dengan kebutuhan kita. Hal ini sangat berguna untuk menghindari error yang mungkin terjadi ketika kita menggunakan tipe data yang tidak memiliki fungsionalitas yang dibutuhkan.
+
+## Generic Function
+Sebelumnya kita sudah mempelajari penggunaan generic pada struct dan enum. Selain pada struct dan enum, generic juga bisa kita gunakan pada function. Dengan menggunakan generic pada function kita bisa membuat function yang general dan bisa digunakan untuk banyak tipe data, sehingga kita bisa menghindari duplikasi kode yang sama untuk tipe data yang berbeda.
+
+Untuk membuat generic function kita cukup tambahkan placeholder tipe data didalam tanda `<>` setelah nama function nya dan sebelum parameter. Kita juga bisa menambahkan trait bound pada generic function sama seperti pada generic struct.
+
+**Sintaks:**
+``` rust
+fn nama_function<T>(param: T) -> T {
+    param
+}
+```
+
+Jikalau kita ingin membatasi tipe data yang boleh digunakan pada generic function kita bisa menambahkan trait bound setelah placeholder nya.
+``` rust
+fn nama_function<T: NamaTrait>(param: T) -> T {
+    param
+}
+```
+
+**Contoh:**
+``` rust
+/*
+ * pada function lg ini kita memberi batasan pada generic T bahwa tipe data yang bisa digunakan
+ * pada generic ini adalah tipe data yang mengimplementasikan trait PartialOrd
+ * dengan begini kita bisa memastikan bahwa tipe data yang kita gunakan pada generic T
+ * adalah tipe data yang bisa dibandingkan dengan operator >
+ * sehingga kita bisa menggunakan operator > pada tipe data tersebut
+ * untuk membandingkan nilai dari v1 dan v2
+ */
+fn lg<T: PartialOrd>(v1: T, v2: T) -> T {
+    if v1 > v2 {
+        v1
+    } else {
+        v2
+    }
+}
+
+#[test]
+fn test_generic_in_function() {
+    let result: i32 = lg::<i32>(10, 20);
+    println!("the largest value is {}", result);
+}
+```
+
+**Penjelasan kode:**
+- `fn lg<T: PartialOrd>(v1: T, v2: T) -> T` artinya kita membuat function `lg` dengan generic type `T` yang dibatasi hanya untuk tipe data yang mengimplementasikan trait `PartialOrd`. Trait `PartialOrd` adalah trait bawaan dari Rust yang memungkinkan tipe data tersebut bisa dibandingkan menggunakan operator seperti `>`, `<`, `>=`, `<=`.
+- `v1: T, v2: T` artinya kedua parameter `v1` dan `v2` memiliki tipe data yang sama yaitu `T`. Jadi ketika kita memanggil function `lg` dengan tipe `i32` maka kedua parameter harus bertipe `i32`.
+- `-> T` artinya return value dari function ini juga bertipe `T`, sama dengan tipe data parameter nya.
+- `lg::<i32>(10, 20)` artinya kita memanggil function `lg` dengan menentukan tipe data `i32` untuk placeholder `T` nya menggunakan turbofish syntax (`::<>`). Sebenarnya kita juga bisa menuliskannya tanpa turbofish syntax menjadi `lg(10, 20)` karena Rust bisa mendeteksi tipe datanya secara otomatis dari value yang kita berikan.
+
+Dengan menggunakan generic pada function kita cukup membuat 1 function `lg` saja dan function tersebut bisa digunakan untuk berbagai macam tipe data seperti `i32`, `f64`, `i8` dan lain-lain selama tipe data tersebut mengimplementasikan trait `PartialOrd`.

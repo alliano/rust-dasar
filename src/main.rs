@@ -1,4 +1,4 @@
-use std::{fmt::format, io::Seek, ops::Range};
+
 
 fn main() {
     println!("Hello, world!");
@@ -1050,6 +1050,8 @@ mod bar;
 mod foo;
 mod foo_bar;
 
+use std::ops::Range;
+
 use bar::say_hello as say_hello_second;
 use foo::say_hello;
 
@@ -1280,28 +1282,38 @@ struct Company {
     is_public: bool
 }
 
+
 trait Action {
-    fn buy_back_stoc(&self, amount: u64) -> String;
+    fn buy_back_stock(&self, amount: u64) -> String;
 
     fn do_right_issue(&self, amount: u64) -> String;
 }
 
-trait Expandsion {
+trait Expansion {
     fn sector(&self, name: String) -> String;
 }
 
-trait Corporate: Action + Expandsion {
+/*
+ * trait corporate ini merupakan trait yang menggabungkan trait Action dan Expansion
+ * jadi ketika kita mengimplementasikan trait Corporate pada struct Company maka kita juga harus mengimplementasikan trait Action dan Expansion
+ */
+trait Corporate: Action + Expansion {
     fn do_something(&self, example: String) -> String;
 }
 
-impl Expandsion for Company {
+
+impl Expansion for Company {
     fn sector(&self, name: String) -> String {
         format!("{}", name)
     }
 }
 
+/*
+ * ketika kita mengimplementasikan trait Corporate pada struct Company maka kita juga harus mengimplementasikan trait Action dan Expansion
+ * karena trait Corporate itu merupakan trait yang menggabungkan trait Action dan Expansion
+ */
 impl Action for Company {
-    fn buy_back_stoc(&self, amount: u64) -> String {
+    fn buy_back_stock(&self, amount: u64) -> String {
         format!("company {} do buyback with amound {}", self.name, amount)
     }
 
@@ -1309,8 +1321,124 @@ impl Action for Company {
         format!("company {} do right issue {}", self.name, amount)
     }
 }
+
+/*
+ * ketika kita mengimplementasikan trait Corporate pada struct Company maka kita juga harus mengimplementasikan trait Action dan Expansion
+ * karena trait Corporate itu merupakan trait yang menggabungkan trait Action dan Expansion
+ */
 impl Corporate for Company {
     fn do_something(&self, example: String) -> String {
         format!("{}", example)
     }
+}
+
+
+/*
+ * Generic adalah feature dimana kita bisa membuat function , struct, enum, method, dan trait yang mana tipe datanya bisa kita tentukan ketika kita membuat instance nya.
+ * feature ini sayangat berguna ketika kita membuat kode  yang generic atau general yang mana bisa digunakan untuk banyak tipe data
+ * dengan menggunakan generic kita bisa menghindari duplikasi kode yang sama untuk tipe data yang berbeda 
+ */
+
+
+ /*
+  * ketika kita membuat generic kita bisa menggunakan placeholder untuk tipe data nya, biasanya kita menggunakan huruf T untuk menandakan bahwa itu adalah placeholder untuk tipe data
+  * kita juga bisa menggunakan huruf lain seperti U, V, dll untuk menandakan placeholder untuk tipe data yang berbeda
+  * kita juga bisa menggunakan trait bound untuk membatasi tipe data yang bisa digunakan pada generic, misalnya kita hanya ingin tipe data yang bisa digunakan pada generic adalah tipe data yang implementasi trait tertentu
+  * 
+  * berikut ini adalah conoth penggunaan generit pada struct, kita membuat struct Point yang mana tipe data dari x dan y bisa kita tentukan ketika kita membuat instance nya    
+  */
+struct Point <T> {
+    x: T,
+    y: T,
+}
+
+#[test]
+fn test_generic_struct() {
+    let p1: Point<f32> = Point { x: 1.0, y: 2.0 };
+    let p2: Point<i32> = Point { x: 1, y: 2 };
+    println!("Point 1: ({}, {})", p1.x, p1.y);
+    println!("Point 2: ({}, {})", p2.x, p2.y);
+}
+
+/*
+ * berikut ini adalah contoh penggunaan generic pada enum, kita membuat enum Value yang mana tipe data dari value bisa kita tentukan ketika kita membuat instance nya
+ */
+enum Value<T> {
+    SOME(T),
+    NONE,
+}
+
+#[test]
+fn test_generic_enum() {
+    let value1: Value<i32> = Value::<i32>::SOME(32);
+    let value2: Value<String> = Value::<String>::SOME(String::from("Hello"));
+    match value1 {
+        Value::SOME(val) => println!("Value 1: {}", val),
+        Value::NONE => println!("Value 1: None"),
+    }
+    match value2 {
+        Value::SOME(val) => println!("Value 2: {}", val),
+        Value::NONE => println!("Value 2: None"),
+    }
+}
+
+
+
+trait CanFight {
+    fn power(&self) -> String;
+}
+
+struct SolarMan {
+    name: String,
+    demage: i16
+}
+
+impl CanFight for SolarMan {
+    fn power(&self) -> String {
+        format!("{} have power {}", self.name, self.demage)
+    }
+}
+
+/**
+ * disini kita memberi batasan pada generic T bahwa tipe data yang bisa digunakan pada generic ini adalah tipe data yang mengimplementasikan trait CanFight
+ * dengan begini kita bisa memastikan bahwa ketika kita membuat instance dari struct Hero maka tipe data yang kita gunakan pada generic T adalah tipe data yang mengimplementasikan trait CanFight, sehingga kita bisa menggunakan method power() pada tipe data tersebut
+ * jika kita mencoba membuat instance dari struct Hero dengan tipe data yang tidak mengimplementasikan trait CanFight maka akan terjadi error karena kita sudah memberi batasan pada generic T bahwa tipe data yang bisa digunakan pada generic ini adalah tipe data yang mengimplementasikan trait CanFight
+ * jadi dengan menggunakan trait bound pada generic kita bisa memastikan bahwa tipe data yang kita gunakan pada generic adalah tipe data yang sesuai dengan kebutuhan kita, sehingga kita bisa menghindari error yang mungkin terjadi ketika kita menggunakan tipe data yang tidak sesuai dengan kebutuhan kita
+ * 
+ */
+struct Hero<T: CanFight> {
+    super_hero: T,
+}
+
+#[test]
+fn test_generic_bound() {
+    let solar: SolarMan = SolarMan {
+        name: String::from("SolarMan"),
+        demage: 100,
+    };
+    let hero: Hero<SolarMan> = Hero {
+        super_hero: solar,
+    };
+    println!("{} {}", hero.super_hero.name, hero.super_hero.power());
+}
+
+
+/**
+ * berikit ini adalah contoh penggunaan generic pada function, kita membuat function lg yang mana tipe data dari v1 dan v2 bisa kita tentukan ketika kita memanggil function tersebut
+ * dengan menggunakan generic pada function kita bisa membuat function yang generic atau general yang mana bisa digunakan untuk banyak tipe data, sehingga kita bisa menghindari duplikasi kode yang sama untuk tipe data yang berbeda
+ * pada function lg ini kita juga memberi batasan pada generic T bahwa tipe data yang bisa digunakan pada generic ini adalah tipe data yang mengimplementasikan trait PartialOrd, dengan begini kita bisa memastika bahwa tipe data yang kita gunakan pada generic T adalah tipe data yang bisa dibandingkan dengan operator >, sehingga kita bisa menggunakan operator > pada tipe data tersebut untuk membandingkan nilai dari v1 dan v2
+ * 
+ */
+fn lg<T: PartialOrd>(v1: T, v2: T) -> T {
+    if v1 > v2 {
+        v1
+    } else {
+        v2
+    }
+}
+
+#[test]
+fn test_generic_in_function() {
+    let result: i32 = lg::<i32>(10, 20);
+    println!("the largest value is {}", result);
 }

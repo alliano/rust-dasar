@@ -2435,3 +2435,224 @@ fn test_generic_method() {
 - `Point::<i32> { x: 10, y: 20 }` artinya kita membuat instance `Point` dengan tipe data `i32` untuk placeholder `T` nya menggunakan turbofish syntax. Sehingga field `x` dan `y` bertipe `i32` dan method `get_x()` serta `get_y()` akan mengembalikan `&i32`.
 
 Dengan menggunakan generic pada method kita bisa membuat method yang fleksibel dan bisa menyesuaikan tipe data nya sesuai dengan tipe data yang kita tentukan ketika membuat instance dari struct tersebut.
+
+## Where Clause Generic
+Sebelumnya kita sudah mempelajari cara membatasi tipe data generic menggunakan trait bound dengan sintaks `T: NamaTrait`. Selain cara tersebut, Rust juga menyediakan cara lain untuk menuliskan trait bound yaitu menggunakan **Where Clause**. Where clause sangat berguna ketika kita memiliki banyak generic type dengan banyak trait bound, karena penulisannya lebih rapi dan mudah dibaca.
+
+**Sintaks:**
+``` rust
+struct NamaStruct<T> where T: NamaTrait {
+    field: T,
+}
+```
+
+**Contoh:**
+``` rust
+struct Enemy<T> where T: CanFight {
+    pub enemy: T
+}
+
+#[test]
+fn test_where_clause_generic() {
+    let solar_man = SolarMan {
+        demage: 100,
+        name: String::from("Dragon")
+    };
+
+    // SolarMan merupakan implementasi dari CanFight,
+    // selain implementasi dari CanFight maka tidak bisa digunakan
+    // sebagai type generic pada struct Enemy
+    let enemy = Enemy::<SolarMan> {
+        enemy: solar_man
+    };
+
+    print!("{}", enemy.enemy.power())
+}
+```
+
+**Penjelasan kode:**
+- `struct Enemy<T> where T: CanFight` artinya kita membuat struct `Enemy` dengan generic type `T` yang dibatasi hanya untuk tipe data yang mengimplementasikan trait `CanFight`. Penulisan ini sama saja dengan `struct Enemy<T: CanFight>` namun menggunakan where clause.
+- `pub enemy: T` artinya field `enemy` bertipe `T` yang sudah dipastikan mengimplementasikan trait `CanFight`.
+- `Enemy::<SolarMan> { enemy: solar_man }` artinya kita membuat instance `Enemy` dengan tipe data `SolarMan` untuk placeholder `T` nya. Hal ini bisa dilakukan karena `SolarMan` sudah mengimplementasikan trait `CanFight`.
+- Jikalau kita mencoba menggunakan tipe data yang tidak mengimplementasikan trait `CanFight` sebagai generic type pada struct `Enemy` maka akan terjadi error pada saat kompilasi.
+
+Where clause sangat berguna ketika kita memiliki banyak generic type, misalnya `struct Foo<A, B, C> where A: TraitA, B: TraitB, C: TraitC` akan lebih mudah dibaca dibandingkan dengan `struct Foo<A: TraitA, B: TraitB, C: TraitC>`.
+
+## Default Generic Type
+Terkadang kita ingin memberikan tipe data default pada generic type, sehingga ketika kita membuat instance dari struct tersebut kita tidak perlu menentukan tipe data untuk generic nya. Untuk melakukan hal tersebut kita bisa menggunakan **Default Generic Type** dengan menambahkan tanda `=` setelah placeholder generic nya diikuti dengan tipe data default nya.
+
+**Sintaks:**
+``` rust
+struct NamaStruct<T = DefaultType> {
+    field: T,
+}
+```
+
+**Contoh:**
+``` rust
+struct MyWife<T = Person> {
+    wife: T
+}
+
+#[test]
+fn test_default_generic_type() {
+    let my_wife = MyWife {
+        wife: Person {
+            first_name: String::from("gatau"),
+            last_name: String::from("gatau juga"),
+            age: 22,
+            is_marige: false
+        }
+    };
+
+    print!("my wife first name {} last name {} age {}",
+        my_wife.wife.first_name, my_wife.wife.last_name, my_wife.wife.age);
+}
+```
+
+**Penjelasan kode:**
+- `struct MyWife<T = Person>` artinya kita membuat struct `MyWife` dengan generic type `T` yang memiliki default type `Person`. Jadi ketika kita membuat instance `MyWife` tanpa menentukan tipe data untuk generic `T` nya maka secara otomatis Rust akan menggunakan `Person` sebagai tipe data default nya.
+- `MyWife { wife: Person { ... } }` artinya kita membuat instance `MyWife` tanpa menentukan tipe data generic nya. Karena kita sudah memberikan default type `Person` maka Rust secara otomatis menggunakan `Person` sebagai tipe data untuk placeholder `T` nya.
+- Kita tetap bisa menentukan tipe data lain jikalau kita ingin menggunakan tipe data selain `Person`, misalnya `MyWife::<NamaStructLain> { ... }`.
+
+## Overloadable Operator
+Sebelumnya kita sudah mempelajari operator aritmatika seperti `+`, `-`, `*`, `/`, `%` dan lain-lain untuk tipe data number. Apakah pada tipe data selain number mendukung operasi tersebut? Tentu saja tidak secara default. Namun Rust memiliki fitur yang mana kita bisa mengimplementasikan operator dalam bentuk method, sehingga kita bisa menggunakan operator aritmatika pada tipe data custom milik kita. Semua overloadable operator pada Rust direpresentasikan dalam bentuk trait yang bisa kita implementasikan. Trait tersebut berada pada module `core::ops`.
+
+**Contoh:**
+``` rust
+use core::ops::Add;
+
+struct Manggo {
+    pub quantity: i128
+}
+
+// membuat custom operasi add (+) untuk tipe data Manggo (struct)
+impl Add for Manggo {
+    type Output = Manggo;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Manggo {
+            quantity: self.quantity + rhs.quantity
+        }
+    }
+}
+
+#[test]
+fn test_custom_operator() {
+    let manggo1 = Manggo { quantity: 10 };
+    let manggo2 = Manggo { quantity: 10 };
+    let manggo3 = Manggo { quantity: 10 };
+
+    let result = manggo1 + manggo2 + manggo3;
+    println!("manggo quantity {}", result.quantity)
+}
+```
+
+**Penjelasan kode:**
+- `use core::ops::Add` artinya kita mengimport trait `Add` dari module `core::ops`. Trait `Add` ini merepresentasikan operator `+`.
+- `impl Add for Manggo` artinya kita mengimplementasikan trait `Add` untuk struct `Manggo`, sehingga struct `Manggo` bisa menggunakan operator `+`.
+- `type Output = Manggo` artinya hasil dari operasi `+` akan mengembalikan tipe data `Manggo`.
+- `fn add(self, rhs: Self) -> Self::Output` artinya method `add` menerima parameter `self` (nilai di sebelah kiri operator) dan `rhs` (right hand side, nilai di sebelah kanan operator) lalu mengembalikan `Self::Output` yaitu `Manggo`.
+- `manggo1 + manggo2 + manggo3` artinya kita menggunakan operator `+` pada struct `Manggo`. Operasi ini bisa dilakukan karena kita sudah mengimplementasikan trait `Add` pada struct `Manggo`. Penulisan `manggo1 + manggo2` sebenarnya sama saja dengan `manggo1.add(manggo2)`.
+
+Selain trait `Add` untuk operator `+`, Rust juga menyediakan trait lain seperti `Sub` untuk `-`, `Mul` untuk `*`, `Div` untuk `/`, `Rem` untuk `%` dan masih banyak lagi yang semuanya berada didalam module `core::ops`.
+
+## Option Value (Null / Undefined)
+Jikalau kita sebelumnya pernah belajar bahasa pemrograman seperti Java, PHP, atau Javascript pasti kita mengenal istilah `Null` atau `Undefined` yaitu nilai kosong dari suatu variabel. Pada bahasa pemrograman Rust tidak memiliki hal tersebut. Di Rust ketika kita membuat variabel kita wajib memberikan value nya. Hal tersebut dikarenakan agar ketika kita mengakses variabel tersebut maka tidak terjadi error.
+
+Lantas bagaimana jikalau kita ingin membuat variabel yang value nya tidak wajib diisi? Maka kita bisa menggunakan **Option Enum**. Rust memiliki `Option` enum yang merupakan representasi dari optional value (nilai atau value yang tidak wajib diisi). Simpelnya `Option` menyediakan 2 opsi yaitu `None` untuk opsi nilai kosong dan `Some(T)` untuk value yang tidak kosong. Keuntungan menggunakan `Option` adalah kita bisa menggunakan pattern matching ketika melakukan pengecekan pada enum `Option` tersebut.
+
+**Contoh:**
+``` rust
+fn double(value: Option<i32>) -> Option<i32> {
+    match value {
+        None => None,
+        Some(i) => Some(i * 2)
+    }
+}
+
+#[test]
+fn test_option_value() {
+    let result = double(Some(32));
+    print!("{:?}", result);
+
+    let result2 = double(None);
+    print!("{:?}", result2)
+}
+```
+
+**Penjelasan kode:**
+- `fn double(value: Option<i32>) -> Option<i32>` artinya function `double` menerima parameter `value` bertipe `Option<i32>` dan mengembalikan `Option<i32>`. Parameter `value` ini bisa berisi nilai `i32` atau bisa juga kosong.
+- `None => None` artinya jikalau value yang diberikan adalah `None` (kosong) maka kembalikan `None` juga.
+- `Some(i) => Some(i * 2)` artinya jikalau value yang diberikan adalah `Some(i)` (berisi nilai) maka ambil nilai tersebut dan kalikan dengan 2 lalu bungkus kembali didalam `Some`.
+- `double(Some(32))` artinya kita memanggil function `double` dengan memberikan nilai `32` yang dibungkus didalam `Some`. Hasilnya adalah `Some(64)`.
+- `double(None)` artinya kita memanggil function `double` dengan memberikan `None` (kosong). Hasilnya adalah `None`.
+
+Dengan menggunakan `Option` kita bisa menghindari error null pointer exception yang sering terjadi pada bahasa pemrograman lain. Rust memaksa kita untuk selalu menangani kemungkinan nilai kosong melalui pattern matching.
+
+## Compare Operator
+Sebelumnya kita sudah mempelajari overloadable operator untuk operator aritmatika. Selain operator aritmatika, kita juga bisa mengimplementasikan operator perbandingan pada tipe data custom milik kita. Untuk mengimplementasikan operator perbandingan kita perlu mengimplementasikan trait `PartialEq` untuk operator `==` dan `!=` serta trait `PartialOrd` untuk operator `<`, `>`, `<=`, `>=`.
+
+**Contoh:**
+``` rust
+impl PartialEq for Manggo {
+    fn eq(&self, other: &Self) -> bool {
+        self.quantity == other.quantity
+    }
+}
+
+impl PartialOrd for Manggo {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.quantity.partial_cmp(&other.quantity)
+    }
+}
+
+#[test]
+fn test_compare_operation() {
+    let manggo1 = Manggo { quantity: 10 };
+    let manggo2 = Manggo { quantity: 20 };
+
+    println!("Manggo 1 == Manggo 2 {}", manggo1 == manggo2);
+    println!("Manggo 1 < Manggo 2 {}", manggo1 < manggo2);
+    println!("Manggo 1 > Manggo 2 {}", manggo1 > manggo2);
+}
+```
+
+**Penjelasan kode:**
+- `impl PartialEq for Manggo` artinya kita mengimplementasikan trait `PartialEq` untuk struct `Manggo`, sehingga struct `Manggo` bisa menggunakan operator `==` dan `!=`.
+- `fn eq(&self, other: &Self) -> bool` artinya method `eq` membandingkan `self` dengan `other` dan mengembalikan `bool`. Didalam method ini kita membandingkan field `quantity` dari kedua instance.
+- `impl PartialOrd for Manggo` artinya kita mengimplementasikan trait `PartialOrd` untuk struct `Manggo`, sehingga struct `Manggo` bisa menggunakan operator `<`, `>`, `<=`, `>=`.
+- `fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering>` artinya method `partial_cmp` membandingkan `self` dengan `other` dan mengembalikan `Option<Ordering>`. Kita mendelegasikan perbandingannya ke method `partial_cmp` milik field `quantity` yang bertipe `i128`.
+- `manggo1 == manggo2` menghasilkan `false` karena `10 != 20`.
+- `manggo1 < manggo2` menghasilkan `true` karena `10 < 20`.
+- `manggo1 > manggo2` menghasilkan `false` karena `10 < 20`.
+
+## String Manipulation
+Rust menyediakan banyak method bawaan untuk melakukan manipulasi pada tipe data `String`. Berikut ini adalah beberapa method yang sering digunakan untuk memanipulasi string.
+
+**Contoh:**
+``` rust
+#[test]
+fn test_string_manipulation() {
+    let name = String::from("Abdillah");
+
+    println!("{}", name.to_ascii_uppercase()); // "ABDILLAH"
+    println!("{}", name.to_lowercase());       // "abdillah"
+    println!("{}", name.replace("Abdillah", "Kim")); // "Kim"
+    println!("{}", name.len());                // 8
+    println!("{}", name.contains("Kim"));      // false
+    println!("{}", name.starts_with("Kim"));   // false
+    println!("{}", name.ends_with("Kim"));     // false
+    println!("{}", name.trim());               // "Abdillah"
+}
+```
+
+**Penjelasan kode:**
+- `to_ascii_uppercase()` digunakan untuk mengubah semua karakter pada string menjadi huruf besar (uppercase).
+- `to_lowercase()` digunakan untuk mengubah semua karakter pada string menjadi huruf kecil (lowercase).
+- `replace("Abdillah", "Kim")` digunakan untuk mengganti semua kemunculan string `"Abdillah"` dengan `"Kim"`.
+- `len()` digunakan untuk mengembalikan panjang (jumlah byte) dari string tersebut.
+- `contains("Kim")` digunakan untuk mengecek apakah string tersebut mengandung substring `"Kim"` atau tidak. Mengembalikan `bool`.
+- `starts_with("Kim")` digunakan untuk mengecek apakah string tersebut diawali dengan substring `"Kim"` atau tidak. Mengembalikan `bool`.
+- `ends_with("Kim")` digunakan untuk mengecek apakah string tersebut diakhiri dengan substring `"Kim"` atau tidak. Mengembalikan `bool`.
+- `trim()` digunakan untuk menghapus whitespace (spasi, tab, newline) di awal dan akhir string.

@@ -1050,7 +1050,7 @@ mod bar;
 mod foo;
 mod foo_bar;
 
-use std::ops::Range;
+use std::{ops::Range, sync::Arc};
 
 use bar::say_hello as say_hello_second;
 use foo::say_hello;
@@ -1471,4 +1471,170 @@ fn test_generic_method() {
     };
 
     println!("x: {}, y: {}", point.get_x(), point.get_y());
+}
+
+
+/**
+ * ini merupakan contoh penggunakan generic bound namun menggunakan where clause
+ */
+struct Enemy<T> where T: CanFight {
+    pub enemy: T
+   
+}
+
+#[test]
+fn test_where_clause_generic() {
+   let solar_man = SolarMan {
+    demage: 100,
+    name: String::from("Dragon")
+   };
+
+   // SolarMan merupakan implementasi dari CanFight, selain implementasi dari CanFight maka tidak bisa kita gunakan sebagai type generic pada struct Enemy
+   let enemy = Enemy::<SolarMan>{
+    enemy: solar_man
+   };
+
+   print!("{}", enemy.enemy.power())
+}
+
+
+/*
+ * ketika generic type nya nga disebutkan maka secara otomatis rust akan menggunakan 
+ * Person sebagai default generic type nya 
+ */
+struct MyWife<T = Person> {
+    wife: T
+}
+
+#[test]
+fn test_default_generic_type() {
+    let my_wife = MyWife {
+         wife: Person {
+            first_name: String::from("gatau"),
+            last_name: String::from("gatau juga"),
+            age: 22,
+            is_marige: false
+         }
+    };
+
+    print!("my wife first name {} last name {} age {} ", my_wife.wife.first_name, my_wife.wife.last_name, my_wife.wife.age);
+}
+
+
+use core::ops::Add;
+
+struct Manggo {
+    pub quantity: i128
+}
+
+/*
+ * Overloadable Operator
+ * sebelumnya kita sudah mempelajari operator aritmatika seperti * +- / % dll untuk tipe data number
+ * Apakah pada tipe data selain number menudukung operasi tersebut? jelas tentu tidak.
+ * Namn Rust memiliki feature yang mana kita bisa mengimplementasikan operator dengan bentuk method, sehingga kita bisa menggunakna operator aritmatika.
+ * Semua Overloadable Operator pada rust direpresentasikan dalam bentuk trait yang bisa kita implementasikan .
+ * trait tersebut berada pada module core::ops
+ */
+impl Add for Manggo {
+    type Output = Manggo;
+
+    // membuat custom operasi add (+) untuk tipe data Manggo(struct)
+    fn add(self, rhs: Self) -> Self::Output {
+        Manggo {
+            quantity: self.quantity + rhs.quantity
+        }
+    }
+}
+
+#[test]
+fn test_custom_operator() {
+    let manggo1 = Manggo {quantity: 10};
+    let manggo2 = Manggo {quantity: 10};
+    let manggo3 = Manggo {quantity: 10};
+
+    let result = manggo1 + manggo2 + manggo3;
+    // let mut result = manggo1.add(manggo2);
+    // result = result.add(manggo3);
+    println!("manggo quantity {}", result.quantity)
+}
+
+
+/*
+ * Null aatau Undifind
+ * 
+ * jika kit asebelumnya pernah belajar bahasa pemrogramman seperti Java, PHP, Javascript
+ * Pasti kita mengenali istilah Null atau Undifined Value atau nilai kosong dari suatu variable
+ * Pada Bahasa pemrogramman Rust tidak memiliki hal tersebut, di Rust ketika kita membuat vairabel kita wajib memberikan value nya
+ * haltersebut dikarnakan agar ketika kita mengakses variabel tersebut maka tidak terjadi eror. 
+ * Lantas gimana kalo kita ingin membuat vairabel dan value nya tidak wajin kita isi?
+ * Maka kita bisa menggunakan Option Enum
+ * 
+ * Optional Value
+ * 
+ * Rust memiliki Option Enum yang merupakan representasi dari optional value(nilau atau value yang tidak wajib diisi)
+ * Simple nya Option menyediakan 2 opsi None unutk opsi nilai kosong dan some(T) unutuk value tidak kosong
+ * Keuntungan menggunakan Option adalah kita bisa menggunakan pattern matching ketika melakukan pengeceka pada Enum Option tersebut
+ * 
+ * 
+ */
+
+
+ fn double(value: Option<i32>) -> Option<i32> {
+     match value {
+         None => None,
+         Some(i) => Some(i * 2)
+     }
+ }
+
+
+ #[test]
+ fn test_option_value() {
+     let result = double(Some(32));
+     print!("{:?}", result);
+
+     let result2 = double(None);
+     print!("{:?}", result2)
+ }
+
+
+ /*
+  * Compare operator 
+  *
+  */
+
+  impl PartialEq for Manggo {
+    fn eq(&self, other: &Self) -> bool {
+        self.quantity == other.quantity
+    }
+  }
+
+  impl PartialOrd for Manggo {
+      fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+          self.quantity.partial_cmp(&other.quantity)
+      }
+  }
+
+#[test]
+fn test_compare_operation() {
+    let manggo1 = Manggo {quantity: 10};
+    let manggo2 = Manggo {quantity: 20};
+
+    println!("Manggo 1 == Manggo 2 {}", manggo1 == manggo2);
+    println!("Manggo 1 < Manggo 2 {}", manggo1 < manggo2);
+    println!("Manggo 1 > Manggo 2 {}", manggo1 > manggo2);
+}
+
+
+#[test]
+fn test_string_manipulation() {
+    let name = String::from("Abdillah");
+
+    println!("{}", name.to_ascii_uppercase());
+    println!("{}", name.to_lowercase());
+    println!("{}", name.replace("Abdillah", "Kim"));
+    println!("{}", name.len());
+    println!("{}", name.contains("Kim"));
+    println!("{}", name.starts_with("Kim"));
+    println!("{}", name.ends_with("Kim"));
+    println!("{}", name.trim());
 }

@@ -1050,7 +1050,7 @@ mod bar;
 mod foo;
 mod foo_bar;
 
-use std::{ops::Range, sync::Arc};
+use std::{collections::{LinkedList, VecDeque}, ops::Range, sync::Arc};
 
 use bar::say_hello as say_hello_second;
 use foo::say_hello;
@@ -1737,7 +1737,54 @@ fn test_closure_as_param() {
      names.push(String::from("Kim"));
      names.push(String::from("Alliano"));
 
-     for nama in names {
+     for nama in &names {
          println!("Vec name: {}", nama);
      }
  }
+
+/*
+ * VecDeque
+ * VecDeque sebenarnya mirip seperti vector, nammun vecDeque memiliki kelebihan yaitu kita bisa menambah data di bagian depan dan belakang, sedangkan vector hanya bisa menambah data di bagian belakang saja
+ * cocok untuk implementasi Queue atau First in First Out (FIFO)
+ */
+
+ #[test]
+ fn test_vector_deque() {
+     let mut names: VecDeque<String> = VecDeque::<String>::new();
+     names.push_back(String::from("Abdillah"));
+     names.push_back(String::from("Kim"));
+     names.push_front(String::from("Alliano"));
+
+     /*
+      * disini saya menggunakna &name sebagai reference. perlu diingat data collection itu disimpan di sisi heap
+      * jadi kalo nga make reference maka ownership nya akan dipindahkan 
+      */
+     for name in &names {
+         println!("VecDeque name: {}", name);
+     }
+ }
+
+ /*
+  * LinkedList
+  * LinkedList merupakan sequence yang mana data nya disimpan dalam node yang saling terhubung satu sama lain, jadi kita bisa menambah data di bagian depan dan belakang, sedangkan vector hanya bisa menambah data di bagian belakang saja
+  * cocok untuk implementasi Queue atau First in First Out (FIFO)
+  * Struktur data LinkedList sangat evisien unutk penambahan dan pengurangan data, oleh karena itu sangat cocok ketika kita membutuhkan 
+  * sequence yang tidak terprediksi ukuranya.
+  * Namin perlu diperhatikan bahwa LinkedList ini memiliki performa yang tidak secepat Vector atau VecDeque karena LinkedList tidak memiliki 
+  * feature mengakses data melalui Index
+  */
+
+  #[test]
+  fn test_linked_list() {
+      let mut names: LinkedList<String> = LinkedList::<String>::new();
+      names.push_back(String::from("Abdillah"));
+      names.push_back(String::from("Kim"));
+      names.push_front(String::from("Alliano"));
+
+      for name in &names {
+          println!("LinkedList name: {}", name);
+      }
+
+      // Ini akan error karena mencoba mengakses melalui Index, sedangkan LinkedList tidak memiliki feature mengakses data melalui Index
+      // println!("name : {}", names[0]);
+  }

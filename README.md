@@ -2779,7 +2779,7 @@ fn test_sequence_vector() {
     names.push(String::from("Alliano"));
 
     // iterasi seluruh isi vector menggunakan for loop
-    for nama in names {
+    for nama in &names {
         println!("Vec name: {}", nama);
     }
 }
@@ -2793,3 +2793,74 @@ fn test_sequence_vector() {
 - `for nama in names` digunakan untuk mengiterasi seluruh elemen vector dari index pertama hingga terakhir. Setiap iterasi, variabel `nama` akan berisi 1 elemen dari vector.
 
 Selain `push()`, vector juga memiliki berbagai method lain seperti `pop()` untuk mengambil elemen terakhir, `len()` untuk mengetahui jumlah elemen, dan `get(index)` untuk mengakses elemen berdasarkan index nya.
+
+## VecDeque
+`VecDeque` sebenarnya mirip seperti `Vector`, namun memiliki kelebihan yaitu kita bisa menambah atau mengambil data dari bagian **depan maupun belakang**, sedangkan `Vector` hanya bisa menambah data dari bagian belakang saja. `VecDeque` sangat cocok untuk implementasi **Queue** atau pola **First In First Out (FIFO)**.
+
+**Contoh:**
+``` rust
+#[test]
+fn test_vector_deque() {
+    let mut names: VecDeque<String> = VecDeque::<String>::new();
+
+    names.push_back(String::from("Abdillah")); // menambah dari belakang
+    names.push_back(String::from("Kim"));      // menambah dari belakang
+    names.push_front(String::from("Alliano")); // menambah dari depan
+
+    /*
+     * menggunakan &names sebagai reference agar ownership tidak berpindah
+     * karena collection disimpan di heap, iterasi tanpa & akan memindahkan ownership
+     */
+    for name in &names {
+        println!("VecDeque name: {}", name);
+    }
+}
+```
+
+**Penjelasan kode:**
+- `VecDeque<String>` artinya kita membuat VecDeque yang berisi elemen bertipe `String`. Untuk menggunakan `VecDeque` kita perlu mengimportnya terlebih dahulu dengan `use std::collections::VecDeque`.
+- `VecDeque::<String>::new()` artinya kita membuat instance VecDeque baru yang masih kosong.
+- `push_back(...)` digunakan untuk menambahkan elemen ke bagian **belakang** VecDeque, sama seperti `push()` pada Vector.
+- `push_front(...)` digunakan untuk menambahkan elemen ke bagian **depan** VecDeque. Inilah perbedaan utama antara VecDeque dan Vector.
+- `for name in &names` menggunakan `&names` (reference) agar ownership dari VecDeque tidak berpindah. Karena collection disimpan di heap, jikalau kita tidak menggunakan `&` maka ownership nya akan dipindahkan ke dalam loop dan VecDeque tersebut tidak bisa digunakan lagi setelah loop selesai.
+
+Dengan menggunakan `push_front` dan `push_back` kita bisa mengimplementasikan Queue (antrian) dengan mudah. Selain itu VecDeque juga memiliki method `pop_front()` untuk mengambil elemen dari depan dan `pop_back()` untuk mengambil dari belakang.
+
+## LinkedList
+`LinkedList` adalah tipe data sequence yang mana datanya disimpan dalam **node** yang saling terhubung satu sama lain. Sama seperti VecDeque, kita bisa menambah data dari bagian depan maupun belakang, sehingga LinkedList juga cocok untuk implementasi **Queue** atau pola **First In First Out (FIFO)**.
+
+Struktur data LinkedList sangat efisien untuk **penambahan dan pengurangan data** karena tidak perlu menggeser elemen lain seperti pada Vector. Namun perlu diperhatikan bahwa LinkedList **tidak memiliki fitur mengakses data melalui index**, sehingga performanya lebih lambat dibanding Vector atau VecDeque ketika kita perlu mengakses data berdasarkan posisinya.
+
+**Contoh:**
+``` rust
+#[test]
+fn test_linked_list() {
+    let mut names: LinkedList<String> = LinkedList::<String>::new();
+
+    names.push_back(String::from("Abdillah")); // menambah dari belakang
+    names.push_back(String::from("Kim"));      // menambah dari belakang
+    names.push_front(String::from("Alliano")); // menambah dari depan
+
+    for name in &names {
+        println!("LinkedList name: {}", name);
+    }
+
+    // ini akan error karena LinkedList tidak mendukung akses melalui index
+    // println!("name : {}", names[0]);
+}
+```
+
+**Penjelasan kode:**
+- `LinkedList<String>` artinya kita membuat LinkedList yang berisi elemen bertipe `String`. Untuk menggunakan `LinkedList` kita perlu mengimportnya dengan `use std::collections::LinkedList`.
+- `LinkedList::<String>::new()` artinya kita membuat instance LinkedList baru yang masih kosong.
+- `push_back(...)` dan `push_front(...)` bekerja sama seperti pada VecDeque, yaitu menambah elemen dari belakang dan depan.
+- `for name in &names` menggunakan reference `&` sama seperti pada VecDeque agar ownership tidak berpindah.
+- `names[0]` akan menyebabkan **error** pada saat kompilasi karena LinkedList tidak mengimplementasikan trait `Index`, artinya LinkedList tidak mendukung akses data melalui index seperti array atau Vector.
+
+**Perbandingan Sequence:**
+
+| Tipe | Tambah Depan | Tambah Belakang | Akses Index | Cocok Untuk |
+|------|:---:|:---:|:---:|-------------|
+| `Vec` | Lambat | Cepat | Ya | Stack (LIFO), akses random |
+| `VecDeque` | Cepat | Cepat | Ya | Queue (FIFO) |
+| `LinkedList` | Cepat | Cepat | Tidak | Tambah/hapus data sering, ukuran tidak terprediksi |

@@ -2656,3 +2656,140 @@ fn test_string_manipulation() {
 - `starts_with("Kim")` digunakan untuk mengecek apakah string tersebut diawali dengan substring `"Kim"` atau tidak. Mengembalikan `bool`.
 - `ends_with("Kim")` digunakan untuk mengecek apakah string tersebut diakhiri dengan substring `"Kim"` atau tidak. Mengembalikan `bool`.
 - `trim()` digunakan untuk menghapus whitespace (spasi, tab, newline) di awal dan akhir string.
+
+## Formatting (Debug Trait)
+Sebelumnya kita sering menggunakan `println!` untuk menampilkan data ke layar. Namun secara default tidak semua tipe data bisa langsung ditampilkan menggunakan `println!`. Data yang bisa ditampilkan hanyalah data yang sudah mengimplementasikan trait dari module `std::fmt::*`. Trait yang paling umum digunakan adalah `Display` untuk format normal dan `Debug` untuk format debugging.
+
+Ketika kita menampilkan data menggunakan `println!("{}", data)` maka data tersebut harus mengimplementasikan trait `Display`. Sedangkan ketika menggunakan `println!("{:?}", data)` maka data tersebut harus mengimplementasikan trait `Debug`.
+
+Untuk struct buatan sendiri kita bisa mengimplementasikan trait `Debug` secara manual menggunakan `impl Debug for NamaStruct`, atau cara yang lebih mudah yaitu menggunakan derive macro `#[derive(Debug)]` di atas definisi struct nya.
+
+**Contoh:**
+``` rust
+use std::fmt::Debug;
+
+struct Category {
+    id: i32,
+    name: String
+}
+
+/*
+ * Disini kita mengimplementasikan trait Debug untuk struct Category secara manual
+ * sehingga kita bisa menampilkan data Category menggunakan println!("{:?}", ...)
+ * Kita bisa menggunakan debug_struct untuk membuat format debug dari struct Category
+ * dengan menyebutkan nama struct dan field-field nya
+ */
+impl Debug for Category {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Category")
+            .field("id", &self.id)
+            .field("name", &self.name)
+            .finish()
+    }
+}
+
+#[test]
+fn test_category_debug() {
+    let category = Category { id: 1, name: String::from("Economic") };
+    println!("{:?}", category);
+}
+```
+
+**Penjelasan kode:**
+- `use std::fmt::Debug` artinya kita mengimport trait `Debug` dari module `std::fmt`.
+- `impl Debug for Category` artinya kita mengimplementasikan trait `Debug` untuk struct `Category`, sehingga struct `Category` bisa ditampilkan menggunakan format `{:?}`.
+- `fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result` adalah method wajib yang harus diimplementasikan dari trait `Debug`. Method ini menerima `Formatter` dan mengembalikan `fmt::Result`.
+- `f.debug_struct("Category")` artinya kita mulai membangun format debug dengan nama struct `"Category"`.
+- `.field("id", &self.id)` artinya kita menambahkan field `id` beserta nilainya ke dalam format debug.
+- `.field("name", &self.name)` sama seperti di atas, kita menambahkan field `name` ke dalam format debug.
+- `.finish()` artinya kita selesai membangun format debug tersebut.
+- `println!("{:?}", category)` artinya kita menampilkan data `category` menggunakan format debug. Output nya kira-kira akan seperti `Category { id: 1, name: "Economic" }`.
+
+Sebenarnya ada cara yang lebih mudah untuk mengimplementasikan trait `Debug` yaitu menggunakan derive macro:
+``` rust
+#[derive(Debug)]
+struct Category {
+    id: i32,
+    name: String
+}
+```
+Dengan menambahkan `#[derive(Debug)]` di atas struct Rust akan secara otomatis mengimplementasikan trait `Debug` untuk struct tersebut tanpa perlu kita tulis secara manual.
+
+## Closure
+Closure adalah function yang tidak memiliki nama (anonymous function), biasanya disimpan pada variabel atau digunakan sebagai parameter. Closure sangat berguna ketika kita membutuhkan sebuah fungsi kecil yang hanya digunakan sekali atau sebagai callback. Untuk membuat closure kita bisa menggunakan tipe data `fn(paramType) -> returnType` dan implementasinya menggunakan sintaks `|param| body`.
+
+**Sintaks:**
+``` rust
+let nama_variabel: fn(TipeParam) -> TipeReturn = |param| ekspresi;
+```
+
+**Contoh:**
+``` rust
+#[test]
+fn test_closure() {
+    // menyimpan closure ke dalam variabel sum
+    // closure ini menerima 2 parameter i32 dan mengembalikan i32
+    let sum: fn(i32, i32) -> i32 = |param1, param2| param1 + param2;
+
+    // memanggil closure sama seperti memanggil function biasa
+    let result = sum(10, 20);
+    println!("the result is {}", result);
+}
+```
+
+**Penjelasan kode:**
+- `let sum: fn(i32, i32) -> i32` artinya kita membuat variabel `sum` dengan tipe data function pointer yang menerima 2 parameter `i32` dan mengembalikan `i32`.
+- `|param1, param2| param1 + param2` adalah definisi closure nya. Parameter closure ditulis diantara dua tanda `|` dan setelah itu diikuti dengan body nya. Jikalau body nya hanya 1 baris ekspresi maka tidak perlu menggunakan kurung kurawal `{}`.
+- `sum(10, 20)` artinya kita memanggil closure yang sudah disimpan di variabel `sum` dengan cara yang sama seperti memanggil function biasa.
+
+Closure juga bisa ditulis dalam bentuk multi-line dengan menggunakan kurung kurawal:
+``` rust
+let sum: fn(i32, i32) -> i32 = |param1, param2| {
+    let result = param1 + param2;
+    result // nilai terakhir tanpa titik koma akan menjadi return value
+};
+```
+
+Perbedaan closure dengan function biasa adalah closure bisa menangkap (capture) variabel dari scope sekitarnya, sedangkan function biasa tidak bisa.
+
+## Collection
+Sebelumnya kita sudah membahas tipe data `Array`, namun ukuran dari array tidak bisa berkembang atau sudah fix. Rust memiliki tipe data **Collection** yang mana bisa kita gunakan untuk menyimpan data yang jumlahnya tidak pasti atau bisa berkembang. Berbeda dengan array yang disimpan pada stack, collection ini disimpan di sisi heap.
+
+Secara garis besar tipe data collection terbagi menjadi 3 kategori:
+
+| Kategori | Deskripsi | Contoh |
+|----------|-----------|--------|
+| **Sequence** | Collection yang memiliki index, data bisa diakses berdasarkan posisinya | `Vec`, `LinkedList`, `VecDeque` |
+| **Map** | Collection berupa pasangan key-value | `HashMap`, `BTreeMap` |
+| **Set** | Collection yang unik dan tidak memiliki duplikasi | `HashSet`, `BTreeSet` |
+
+## Vector
+Vector (`Vec<T>`) adalah salah satu tipe data sequence yang paling sering digunakan di Rust. Urutannya sesuai dengan urutan data yang kita masukkan dan penambahan data dilakukan dari bagian belakang. Vector sangat cocok untuk implementasi **Stack** (tumpukan) atau pola **Last In First Out (LIFO)**.
+
+**Contoh:**
+``` rust
+#[test]
+fn test_sequence_vector() {
+    // membuat vector baru yang kosong dengan tipe data String
+    let mut names: Vec<String> = Vec::<String>::new();
+
+    // menambahkan data ke vector dari bagian belakang
+    names.push(String::from("Abdillah"));
+    names.push(String::from("Kim"));
+    names.push(String::from("Alliano"));
+
+    // iterasi seluruh isi vector menggunakan for loop
+    for nama in names {
+        println!("Vec name: {}", nama);
+    }
+}
+```
+
+**Penjelasan kode:**
+- `Vec<String>` artinya kita membuat vector yang berisi elemen bertipe `String`. Berbeda dengan array, ukuran vector tidak perlu ditentukan dari awal karena bisa berkembang secara dinamis.
+- `Vec::<String>::new()` artinya kita membuat instance vector baru yang masih kosong menggunakan turbofish syntax. Kita juga bisa menuliskannya lebih singkat menggunakan macro `vec![]`, contohnya `vec![String::from("Abdillah")]`.
+- `mut` pada `let mut names` diperlukan karena kita akan mengubah isi vector (menambah data). Jikalau tidak ada `mut` maka kita tidak bisa memanggil `push()`.
+- `names.push(...)` digunakan untuk menambahkan elemen baru ke bagian **belakang** vector. Setiap kali `push` dipanggil, vector akan bertambah 1 elemen.
+- `for nama in names` digunakan untuk mengiterasi seluruh elemen vector dari index pertama hingga terakhir. Setiap iterasi, variabel `nama` akan berisi 1 elemen dari vector.
+
+Selain `push()`, vector juga memiliki berbagai method lain seperti `pop()` untuk mengambil elemen terakhir, `len()` untuk mengetahui jumlah elemen, dan `get(index)` untuk mengakses elemen berdasarkan index nya.

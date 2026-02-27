@@ -1638,3 +1638,106 @@ fn test_string_manipulation() {
     println!("{}", name.ends_with("Kim"));
     println!("{}", name.trim());
 }
+
+struct Category {
+    id: i32,
+    name: String
+}
+
+use std::fmt::Debug;
+
+/**
+ * Formating
+ * Sebelunya kita sering kali menggunakna println!
+ * println! merupakan sebuah macro bukan function
+ * ketika menggunakan macro println! kita sering kali menambahkan paramerter tambahan untuk
+ * menampilkan sebuh data.
+ * Secara default data tidak dapat ditampilkan dengan println!/macro.
+ * data yang bisa ditampilkan ahanyalah dat yang sudah implementasi std::fmt::*
+ */
+impl Debug for Category {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Category")
+            .field("id", &self.id)
+            .field("name", &self.name)
+            .finish()
+    }
+}
+
+#[test]
+fn test_category_debug() {
+    let category = Category { id: 1, name: String::from("Economic") };
+    println!("{:?}", category);
+}
+
+/*
+ * Closeure
+ * Closure adalah function yang tidak memiliki nama, biasanya disimpan pada variabel atau digunakan di parameter
+ * Kita bisa membuat Clusure dan menggunakan Closure ketika mebutuhkanya. Untuk membuat Closure 
+ * kita bisa menggunakan tipe data fn(paramType)->returnType 
+ * Dan unutk menmanggil Closure, kita bisa panggil menggunakan nama variabel atau parameternya secara langsung.
+ */
+
+#[test]
+fn test_closure() {
+    let sum: fn(i32, i32) -> i32 = |param1, param2| param1 + param2;
+    let result = sum(10, 20);
+    println!("the result is {}", result);
+}
+
+
+fn print_with_filter(name: String, filter: fn(&str) -> String) {
+    let result = filter(&name);
+    println!("{}", result);
+}
+
+#[test]
+fn test_closure_as_param() {
+    let name = String::from("Abdillah");
+    print_with_filter(name, |name| ->  String {
+        name.to_uppercase()
+    });
+}
+
+/*
+ * Collection
+ * Sebelumnya kita sudah membahas tipe data Array, namun size of array tidak bisa berkembang atau sudah FIX ukuranya
+ * Rust memiliki tipe data Collection yang mana kita bisa gunakan untuk menyimpan data yang jumlahnya tidak pasti atau bisa berkembang.
+ * Collection ini disipan di sisi Heep berbeda denga array yang disipan pada stack.
+ * 
+ */
+
+ /*
+  * Tipe Data COllection
+  * Secara garis besar tipe data collectio terbagi menjadi 3:
+  * 1. Sequence: tipe data collection yang memiliki Index
+  * 2. Map: tipe data colleciton berupa key value
+  * 3. Sets: tipe data collection yang unix dan tidak memiliki index
+  */
+
+
+  /*
+   * Sequence
+   * Sequence adalah tipe data collection yang memiliki index, jadi kita bisa mengakses data pada sequence dengan menggunakan index nya
+   * contoh tipe data sequence adalah Vector, LinkedList, VecDeque, dll
+   */
+
+
+/*
+ * Vector
+ * Vector merupakan Sequence yang urutanya sesuai dengan yang kita inginkan
+ * Menambah data ke vector dilakukan dibagian belakang
+ * Cocok untuk implementasi Stack(Tumpukan) atau Last in First Out (LIFO)
+ */
+
+ #[test]
+ fn test_sequence_vector() {
+     let mut names: Vec<String> = Vec::<String>::new();
+     names.push(String::from("Abdillah"));
+     names.push(String::from("Kim"));
+     names.push(String::from("Alliano"));
+
+     for nama in names {
+         println!("Vec name: {}", nama);
+     }
+ }

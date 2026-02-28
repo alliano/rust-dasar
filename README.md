@@ -3146,3 +3146,103 @@ fn test_recoverable() {
 - `Err(error) => println!(...)` artinya jikalau hasilnya error maka ambil pesan `error` dari dalam `Err` dan tampilkan.
 
 Dengan menggunakan `Result` program kita tidak akan berhenti secara tiba-tiba ketika terjadi error, melainkan kita bisa memutuskan sendiri apa yang harus dilakukan ketika terjadi error tersebut.
+
+## ? Operator
+Ketika menggunakan `Result`, sering kali kita memanggil beberapa function yang menghasilkan `Result` dan ingin mengecek apakah error terjadi. Jikalau error terjadi kita langsung ingin mengembalikan error tersebut ke pemanggil function. Jikalau kita melakukan hal ini secara manual menggunakan pattern matching, kode kita akan menjadi panjang dan berulang-ulang.
+
+Untuk mengatasi hal tersebut Rust menyediakan **? Operator** (question mark operator) yang secara otomatis bisa mengembalikan `Result` jikalau terjadi error. Operator ini hanya bisa digunakan didalam function yang mengembalikan `Result`. Jikalau function mengembalikan `Ok` maka ekspresi tersebut akan menghasilkan nilai dari dalam `Ok`, namun jikalau mengembalikan `Err` maka ? operator akan langsung mengembalikan error tersebut ke pemanggil.
+
+**Contoh:**
+``` rust
+fn connection_cache(host: Option<String>) -> Result<String, String> {
+    match host {
+        None => Err("cache not connected".to_string()),
+        Some(host) => Ok(format!("connecting to cache with host {}", host))
+    }
+}
+
+fn connect_email(host: Option<String>) -> Result<String, String> {
+    match host {
+        None => Err("No email host provided".to_string()),
+        Some(host) => Ok(format!("connected to email host {}", host))
+    }
+}
+
+fn start_server(host: Option<String>) -> Result<String, String> {
+      /*
+     * dibawah ini merupakan contoh kode yang tidak menggunakan ? operator, jadi kita harus melakukan 
+     * pattern matching secara manual untuk mengecek apakah function conection_cache dan coneect_email menghasilkan error atau tidak, 
+     * jika menghasilkan error maka kita harus mengembalikan error secara manual dengan menggunakan return Err(err)
+     */
+    //  let cache = conection_cache(host.clone());
+    //  match cache {
+    //      Ok(_) => {}
+    //      Err(err) => return Err(err)
+    //  }
+
+    //  let mail = coneect_email(host.clone());
+    //  match mail {
+    //     Ok(_) => {}
+    //     Err(err) => return Err(err)
+    //  }
+    
+    /*
+    * dibawah ini merupakan contoh kode yang menggunakan ? operator, jadi kita tidak perlu melakukan pattern matching secara manual untuk mengecek apakah function conection_cache dan coneect_email menghasilkan error atau tidak, 
+    * jika m
+    */
+
+    connection_cache(host.clone())?;
+    connect_email(host.clone())?;
+
+    Ok("Server successfully Started".to_string())
+}
+
+#[test]
+fn test_operator_question() {
+    let server = start_server(Some(String::from("localhost:8080")));
+    match server {
+        Ok(message) => println!("Success: {}", message),
+        Err(error) => println!("Error: {}", error),
+    }
+}
+```
+
+**Penjelasan kode:**
+- `fn start_server(host: Option<String>) -> Result<String, String>` adalah function yang mengembalikan `Result`. Function ini memanggil dua function lain yang juga mengembalikan `Result` yaitu `connection_cache` dan `connect_email`.
+- `connection_cache(host.clone())?` artinya kita memanggil function `connection_cache` dengan operator `?` di belakangnya. Jikalau function ini mengembalikan `Ok(value)` maka expression ini akan menghasilkan `value` (isi dari `Ok`). Namun jikalau mengembalikan `Err(err)` maka ? operator akan langsung mengembalikan `Err(err)` dari function `start_server` dan kode di bawahnya tidak akan dieksekusi.
+- `host.clone()` digunakan karena `host` bersifat `move` ketika digunakan di function pertama, sehingga kita perlu melakukan clone agar bisa digunakan lagi di function kedua.
+- Jikalau kedua function berhasil mengembalikan `Ok` maka kita akan sampai ke `Ok("Server successfully Started".to_string())` dan mengembalikan pesan sukses.
+- Pada `match server` kita menangani baik kasus `Ok` maupun `Err` sama seperti biasanya.
+
+**Perbandingan dengan Pattern Matching Manual:**
+
+Tanpa ? operator (panjang dan berulang):
+``` rust
+fn start_server_manual(host: Option<String>) -> Result<String, String> {
+    let cache = connection_cache(host.clone());
+    match cache {
+        Ok(_) => {}
+        Err(err) => return Err(err)
+    }
+
+    let mail = connect_email(host.clone());
+    match mail {
+        Ok(_) => {}
+        Err(err) => return Err(err)
+    }
+
+    Ok("Server successfully Started".to_string())
+}
+```
+
+Dengan ? operator (singkat dan jelas):
+``` rust
+fn start_server(host: Option<String>) -> Result<String, String> {
+    connection_cache(host.clone())?;
+    connect_email(host.clone())?;
+
+    Ok("Server successfully Started".to_string())
+}
+```
+
+Dengan menggunakan ? operator kode kita menjadi lebih ringkas, mudah dibaca, dan tidak ada pola yang berulang-ulang. Oleh karena itu ? operator sangat berguna ketika kita bekerja dengan `Result` yang banyak.

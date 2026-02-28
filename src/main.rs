@@ -1953,3 +1953,57 @@ fn test_closure_as_param() {
             Err(error) => println!("Error: {}", error),
         }
     }
+
+
+/*
+ * ? Operator
+ * Saat menggunakan Revovreable Error, kadang kita sering memanggil beberapa jenis function yang menghasilkan Result lalu ingin mengecek jika error maka
+ * kita langsung mengembalikan error secar langsung .
+ * Jika kita melakukanya secara manual menggunakan Pattern Matching, kadang cara tersebut menyulitkan.
+ * Untuk mengatasi hal tersebut kita bisa menggunakan ? Operator yang secara otomatis bisa mengembalikan Result jika memang Error
+ */
+
+ fn coneect_email(host: Option<String>) -> Result<String, String>{
+     match host {
+         None => Err("No email host provided".to_string()),
+         Some(host) => Ok(format!("connected to email host {}", host))
+     }
+ }
+
+ fn start_server(host: Option<String>) -> Result<String, String> {
+    /*
+     * dibawah ini merupakan contoh kode yang tidak menggunakan ? operator, jadi kita harus melakukan 
+     * pattern matching secara manual untuk mengecek apakah function conection_cache dan coneect_email menghasilkan error atau tidak, 
+     * jika menghasilkan error maka kita harus mengembalikan error secara manual dengan menggunakan return Err(err)
+     */
+    //  let cache = conection_cache(host.clone());
+    //  match cache {
+    //      Ok(_) => {}
+    //      Err(err) => return Err(err)
+    //  }
+
+    //  let mail = coneect_email(host.clone());
+    //  match mail {
+    //     Ok(_) => {}
+    //     Err(err) => return Err(err)
+    //  }
+    
+    /*
+    * dibawah ini merupakan contoh kode yang menggunakan ? operator, jadi kita tidak perlu melakukan pattern matching secara manual untuk mengecek apakah function conection_cache dan coneect_email menghasilkan error atau tidak, 
+    * jika menghasilkan error maka secara otomatis akan mengembalikan error dengan menggunakan ? operator
+    */
+    
+    conection_cache(host.clone())?;
+    coneect_email(host.clone())?;
+    Ok("Server successfully Started".to_string())
+ }
+
+
+ #[test]
+ fn test_operator_question() {
+    let server = start_server(Some(String::from("localhost:8080")));
+    match server {
+        Ok(message) => println!("Success: {}", message),
+        Err(error) => println!("Error: {}", error),
+    }    
+ }

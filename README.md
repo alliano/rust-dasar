@@ -2864,3 +2864,285 @@ fn test_linked_list() {
 | `Vec` | Lambat | Cepat | Ya | Stack (LIFO), akses random |
 | `VecDeque` | Cepat | Cepat | Ya | Queue (FIFO) |
 | `LinkedList` | Cepat | Cepat | Tidak | Tambah/hapus data sering, ukuran tidak terprediksi |
+
+## Map
+Map merupakan jenis collection yang berbasis **key-value**. Berbeda dengan Sequence yang index nya menggunakan angka secara otomatis, pada Map kita bisa menggunakan tipe data apapun sebagai key nya, begitu juga value nya. Hal penting yang perlu diperhatikan pada Map adalah **key tidak boleh duplikat** — jikalau kita memasukkan data dengan key yang sudah ada sebelumnya maka data lama akan di-replace dengan data yang baru.
+
+Rust memiliki 2 implementasi Map yaitu `HashMap` dan `BTreeMap`. Perbedaan utamanya adalah:
+
+| | `HashMap` | `BTreeMap` |
+|---|---|---|
+| **Urutan Key** | Tidak diurutkan | Diurutkan secara otomatis |
+| **Kecepatan Insert** | Lebih cepat | Lebih lambat |
+| **Kecepatan Pencarian** | Lebih lambat (linear search) | Lebih cepat (binary search) |
+| **Cocok Untuk** | Operasi insert yang banyak | Operasi pencarian yang banyak |
+
+## HashMap
+`HashMap` adalah implementasi Map yang paling umum digunakan. Key pada HashMap **tidak diurutkan** sehingga operasi insert data cenderung lebih cepat. Namun pencarian data pada HashMap harus dilakukan secara linear karena key nya tidak terurut.
+
+**Contoh:**
+``` rust
+#[test]
+fn test_hash_map() {
+    let mut names: HashMap<String, String> = HashMap::<String, String>::new();
+
+    // memasukkan data dengan key dan value nya
+    names.insert(String::from("first_name"), String::from("Abdillah"));
+    names.insert(String::from("last_name"), String::from("Kim"));
+
+    // mengambil data berdasarkan key nya
+    println!("first name: {}", &names.get("first_name").unwrap());
+    println!("last name: {}", &names.get("last_name").unwrap());
+}
+```
+
+**Penjelasan kode:**
+- `HashMap<String, String>` artinya kita membuat HashMap dengan tipe key `String` dan tipe value `String`. Parameter generic pertama adalah tipe key, parameter kedua adalah tipe value. Untuk menggunakan `HashMap` kita perlu mengimportnya dengan `use std::collections::HashMap`.
+- `HashMap::<String, String>::new()` artinya kita membuat instance HashMap baru yang masih kosong.
+- `names.insert(key, value)` digunakan untuk memasukkan data ke HashMap. Jikalau key yang kita masukkan sudah ada sebelumnya maka value lama akan diganti dengan value baru.
+- `names.get("first_name")` digunakan untuk mengambil data berdasarkan key nya. Method `get()` mengembalikan `Option<&V>` bukan langsung value nya, karena key yang kita cari mungkin tidak ada di HashMap.
+- `.unwrap()` digunakan untuk mengambil nilai dari `Option`. Jikalau data dengan key tersebut tidak ditemukan maka `.unwrap()` akan menyebabkan panic. Pada kode production sebaiknya gunakan pattern matching atau `.unwrap_or()` untuk menangani kasus key tidak ditemukan.
+
+## BTreeMap
+`BTreeMap` adalah implementasi Map yang mana key nya akan **diurutkan secara otomatis**. Karena key nya sudah terurut maka operasi pencarian data pada BTreeMap menggunakan binary search sehingga lebih cepat dibanding HashMap untuk kasus pencarian. Namun operasi insert nya sedikit lebih lambat karena Rust perlu mengurutkan key setiap kali data baru dimasukkan.
+
+**Contoh:**
+``` rust
+#[test]
+fn test_b_tree_map() {
+    let mut names: BTreeMap<String, String> = BTreeMap::<String, String>::new();
+    names.insert(String::from("first_name"), String::from("Abdillah"));
+    names.insert(String::from("last_name"), String::from("Kim"));
+
+    // key akan diiterasi secara urut (alphabetical order)
+    for entry in &names {
+        println!("{}: {}", entry.0, entry.1);
+    }
+}
+```
+
+**Penjelasan kode:**
+- `BTreeMap<String, String>` artinya kita membuat BTreeMap dengan tipe key `String` dan tipe value `String`. Untuk menggunakan `BTreeMap` kita perlu mengimportnya dengan `use std::collections::BTreeMap`.
+- `BTreeMap::<String, String>::new()` artinya kita membuat instance BTreeMap baru yang masih kosong.
+- `names.insert(key, value)` bekerja sama seperti pada HashMap, yaitu memasukkan data dengan key dan value nya.
+- `for entry in &names` digunakan untuk mengiterasi seluruh data pada BTreeMap. Kita menggunakan `&names` agar ownership tidak berpindah. Berbeda dengan HashMap, pada BTreeMap urutan iterasi akan selalu konsisten sesuai urutan key nya (alphabetical untuk tipe `String`).
+- `entry.0` adalah key dan `entry.1` adalah value dari setiap pasangan data pada BTreeMap. Output dari kode di atas akan menampilkan `first_name` sebelum `last_name` karena `f` secara alphabetical lebih awal dari `l`.
+
+## Set
+Set merupakan tipe data collection yang mana data didalamnya **tidak boleh duplikat**. Jikalau kita memasukkan data yang sudah ada sebelumnya (duplikat) maka secara otomatis data tersebut tidak akan diterima dan tidak akan dimasukkan ke dalam Set. Hal ini membuat Set sangat berguna ketika kita ingin memastikan bahwa tidak ada data yang sama didalam sebuah collection. Berbeda dengan Sequence, **data pada Set tidak bisa diakses melalui index**.
+
+Rust memiliki 2 implementasi Set yaitu `HashSet` dan `BTreeSet`. Perbedaannya adalah:
+
+| | `HashSet` | `BTreeSet` |
+|---|---|---|
+| **Urutan Data** | Tidak dijamin urut | Diurutkan secara otomatis |
+| **Kecepatan Insert** | Lebih cepat | Lebih lambat |
+| **Cocok Untuk** | Pengecekan duplikasi yang cepat | Data yang perlu terurut dan unik |
+
+## HashSet
+`HashSet` adalah implementasi Set yang tidak menjamin urutan data. Tujuan utama HashSet adalah memastikan tidak ada data duplikat secara cepat. Karena tidak perlu mengurutkan data, operasi insert pada HashSet lebih cepat dibandingkan BTreeSet.
+
+**Contoh:**
+``` rust
+#[test]
+fn test_hash_set() {
+    let mut names: HashSet<String> = HashSet::<String>::new();
+
+    names.insert(String::from("Abdillah"));
+    names.insert(String::from("Kiim"));
+    names.insert(String::from("Abdillah")); // data duplikat, tidak akan dimasukkan
+
+    for name in &names {
+        println!("Name : {}", name);
+    }
+}
+```
+
+**Penjelasan kode:**
+- `HashSet<String>` artinya kita membuat HashSet yang berisi elemen bertipe `String`. Untuk menggunakan `HashSet` kita perlu mengimportnya dengan `use std::collections::HashSet`.
+- `HashSet::<String>::new()` artinya kita membuat instance HashSet baru yang masih kosong.
+- `names.insert(...)` digunakan untuk memasukkan data ke HashSet. Method `insert` mengembalikan `bool`, yaitu `true` jikalau data berhasil dimasukkan dan `false` jikalau data sudah ada (duplikat) sehingga tidak dimasukkan.
+- Pada kode diatas kita memasukkan `"Abdillah"` sebanyak 2 kali, namun karena HashSet tidak menerima duplikat maka hanya ada 1 data `"Abdillah"` yang tersimpan di dalam HashSet.
+- `for name in &names` menggunakan reference `&` agar ownership tidak berpindah. Perlu diperhatikan bahwa urutan output dari HashSet tidak dijamin, bisa berbeda-beda setiap kali program dijalankan.
+
+## BTreeSet
+`BTreeSet` adalah implementasi Set yang memastikan tidak ada data duplikat sekaligus **mengurutkan data** di dalamnya secara otomatis. Karena perlu mengurutkan data setiap kali kita menambahkan atau menghapus data, performanya sedikit lebih lambat dibandingkan HashSet. Namun keuntungannya adalah urutan iterasi data selalu konsisten dan terurut.
+
+**Contoh:**
+``` rust
+#[test]
+fn test_b_tree_set() {
+    let mut names: BTreeSet<String> = BTreeSet::<String>::new();
+
+    names.insert(String::from("Abdillah"));
+    names.insert(String::from("Kiim"));
+    names.insert(String::from("Abdillah")); // data duplikat, tidak akan dimasukkan
+
+    for name in &names {
+        println!("Name : {}", name);
+    }
+}
+```
+
+**Penjelasan kode:**
+- `BTreeSet<String>` artinya kita membuat BTreeSet yang berisi elemen bertipe `String`. Untuk menggunakan `BTreeSet` kita perlu mengimportnya dengan `use std::collections::BTreeSet`.
+- `BTreeSet::<String>::new()` artinya kita membuat instance BTreeSet baru yang masih kosong.
+- `names.insert(...)` bekerja sama seperti pada HashSet, yaitu hanya memasukkan data jikalau belum ada. Data duplikat `"Abdillah"` yang dimasukkan kedua kali tidak akan diterima.
+- `for name in &names` menggunakan reference `&` agar ownership tidak berpindah. Berbeda dengan HashSet, urutan output dari BTreeSet selalu konsisten dan terurut secara alphabetical. Jadi output di atas akan selalu menampilkan `"Abdillah"` sebelum `"Kiim"` karena `A` secara alphabetical lebih awal dari `K`.
+
+**Perbandingan semua tipe Collection:**
+
+| Tipe | Kategori | Duplikat | Terurut | Akses Index |
+|------|----------|:--------:|:-------:|:-----------:|
+| `Vec` | Sequence | Boleh | Tidak | Ya |
+| `VecDeque` | Sequence | Boleh | Tidak | Ya |
+| `LinkedList` | Sequence | Boleh | Tidak | Tidak |
+| `HashMap` | Map | Key unik | Tidak | Tidak |
+| `BTreeMap` | Map | Key unik | Ya (by key) | Tidak |
+| `HashSet` | Set | Tidak boleh | Tidak | Tidak |
+| `BTreeSet` | Set | Tidak boleh | Ya | Tidak |
+
+## Iterator
+Rust memiliki modul yang bernama **Iterator** yang digunakan sebagai mekanisme untuk melakukan operasi secara berurutan pada data. Semua data yang bersifat multiple seperti Array, Slice, dan Collection memiliki fitur iterator. Dengan menggunakan iterator kita bisa melakukan iterasi (perulangan) terhadap data secara lebih fleksibel dibandingkan langsung menggunakan `for` loop biasa.
+
+Untuk mendapatkan iterator dari sebuah collection atau array kita bisa memanggil method `.iter()`. Setelah itu kita bisa memanggil method `.next()` untuk mengambil elemen satu per satu, dimana setiap pemanggilan `.next()` akan mengembalikan `Option<&T>` — `Some(&T)` jikalau masih ada elemen berikutnya, dan `None` jikalau sudah habis.
+
+**Contoh:**
+``` rust
+#[test]
+fn test_iterator() {
+    let numbers: [i32; 5] = [1, 2, 4, 5, 8];
+
+    // mendapatkan iterator dari array
+    let mut iterator = numbers.iter();
+
+    // menggunakan while let untuk mengiterasi satu per satu
+    // iterator.next() mengembalikan Some(value) jika masih ada, None jika sudah habis
+    while let Some(number) = iterator.next() {
+        println!("number: {}", number);
+    }
+
+    // iterator yang sudah habis tidak akan menghasilkan data apapun
+    for number in iterator {
+        println!("number-x: {}", number);
+    }
+}
+```
+
+**Penjelasan kode:**
+- `numbers.iter()` digunakan untuk mendapatkan iterator dari array `numbers`. Iterator ini menyimpan posisi saat ini dan tahu elemen mana yang akan diambil berikutnya.
+- `let mut iterator` harus bersifat `mut` karena setiap kali kita memanggil `.next()` posisi iterator akan bergeser ke elemen berikutnya (state berubah).
+- `while let Some(number) = iterator.next()` artinya selama `iterator.next()` mengembalikan `Some(value)` maka lakukan perulangan. Ketika iterator sudah habis dan mengembalikan `None` maka loop berhenti secara otomatis.
+- `for number in iterator` setelah loop `while let` di atas, iterator sudah habis (sudah mencapai akhir), sehingga `for` loop ini tidak akan mengeksekusi apapun karena tidak ada elemen yang tersisa.
+
+## Iterator Method
+Selain menggunakan `.next()` secara manual, iterator juga memiliki banyak method bawaan yang sangat berguna untuk mengolah data secara fungsional. Method-method ini memungkinkan kita untuk melakukan transformasi, filter, dan agregasi data secara ringkas dan ekspresif.
+
+**Contoh:**
+``` rust
+#[test]
+fn test_iterator_method() {
+    let vector: Vec<i32> = vec![1, 2, 3, 4, 5];
+    println!("vector: {:?}", vector);
+
+    // menjumlahkan semua elemen
+    let sum = vector.iter().sum::<i32>();
+    println!("sum: {}", sum);
+
+    // menghitung jumlah elemen
+    let count = vector.iter().count();
+    println!("count: {}", count);
+
+    // mengalikan setiap elemen dengan 2
+    let doubled: Vec<i32> = vector.iter().map(|x| x * 2).collect();
+    println!("doubled: {:?}", doubled);
+
+    // mengambil hanya elemen yang ganjil
+    let odd: Vec<&i32> = vector.iter().filter(|x| *x % 2 != 0).collect::<Vec<&i32>>();
+    println!("odd: {:?}", odd);
+}
+```
+
+**Penjelasan kode:**
+- `vec![1, 2, 3, 4, 5]` adalah cara singkat untuk membuat `Vec` dengan nilai awal tanpa perlu memanggil `new()` lalu `push()` satu per satu.
+- `.sum::<i32>()` digunakan untuk menjumlahkan semua elemen pada iterator. Kita perlu menyebutkan tipe datanya secara eksplisit menggunakan turbofish `::<i32>` agar Rust tahu tipe hasil penjumlahannya. Hasilnya adalah `15`.
+- `.count()` digunakan untuk menghitung jumlah elemen pada iterator. Hasilnya adalah `5`.
+- `.map(|x| x * 2)` digunakan untuk mentransformasi setiap elemen. Closure `|x| x * 2` akan dipanggil untuk setiap elemen dan hasilnya menjadi elemen baru. `.map()` tidak langsung mengeksekusi, melainkan menghasilkan iterator baru.
+- `.filter(|x| *x % 2 != 0)` digunakan untuk menyaring elemen berdasarkan kondisi tertentu. Hanya elemen yang membuat closure mengembalikan `true` yang akan lolos. `*x` digunakan untuk melakukan dereference karena `x` adalah `&&i32` (reference dari reference).
+- `.collect()` digunakan untuk mengumpulkan hasil iterator menjadi sebuah collection. Kita perlu menyebutkan tipe tujuannya (misalnya `Vec<i32>`) agar Rust tahu collection apa yang ingin dihasilkan. Method ini harus selalu dipanggil di akhir chain iterator jikalau kita ingin menghasilkan collection baru.
+
+Keunggulan menggunakan iterator method adalah kita bisa melakukan **method chaining**, yaitu merangkai beberapa operasi sekaligus dalam satu baris kode yang mudah dibaca, misalnya `vector.iter().filter(...).map(...).collect()`.
+
+## Error Handling
+Error handling merupakan hal yang sudah biasa dalam pengembangan applikasi. Hampir semua bahasa pemrograman memiliki error handling, termasuk Rust. Namun berbeda dengan bahasa pemrograman lain seperti Java, PHP, atau Javascript yang menggunakan tipe data **Exception**, Rust menggunakan pendekatan yang berbeda.
+
+Rust membagi error handling menjadi 2 jenis:
+- **Unrecoverable Error** — error yang tidak dapat dipulihkan. Program akan langsung berhenti ketika error ini terjadi.
+- **Recoverable Error** — error yang dapat dipulihkan. Program masih bisa menangani error ini dan melanjutkan eksekusi.
+
+## Unrecoverable Error (panic!)
+Jikalau kita mendapatkan jenis error yang tidak dapat dipulihkan maka kita bisa menggunakan **Unrecoverable Error**. Jenis error ini biasanya terjadi ketika kita melakukan operasi yang tidak valid, seperti mengakses index yang diluar batas array. Rust menggunakan macro `panic!` untuk melakukan hal tersebut. Ketika `panic!` dipanggil maka program akan langsung berhenti dan menampilkan pesan error beserta stack trace nya.
+
+**Contoh:**
+``` rust
+fn connect_database(host: Option<String>) {
+    match host {
+        None => {
+            // menghentikan program dengan pesan error
+            panic!("host is not provided");
+        }
+        Some(host) => {
+            println!("connecting to database with host {}", host);
+        }
+    }
+}
+
+#[test]
+fn test_panic() {
+    connect_database(None); // ini akan panic dan program berhenti
+    connect_database(Some(String::from("localhost:5432")));
+}
+```
+
+**Penjelasan kode:**
+- `fn connect_database(host: Option<String>)` adalah function yang menerima parameter `host` bertipe `Option<String>`. Penggunaan `Option` disini berarti `host` bisa berisi nilai `String` atau bisa juga kosong (`None`).
+- `match host` digunakan untuk memeriksa apakah `host` berisi nilai atau tidak.
+- `None => { panic!("host is not provided") }` artinya jikalau `host` bernilai `None` maka program akan langsung berhenti (panic) dengan pesan `"host is not provided"`. Setelah `panic!` dipanggil tidak ada kode berikutnya yang akan dieksekusi.
+- `Some(host) => { println!(...) }` artinya jikalau `host` berisi nilai maka tampilkan pesan koneksi database.
+- Pada `test_panic`, baris `connect_database(None)` akan menyebabkan panic sehingga baris `connect_database(Some(...))` tidak akan pernah dieksekusi.
+
+## Recoverable Error (Result)
+Jikalau kita mendapatkan jenis error yang masih bisa ditangani maka kita bisa menggunakan **Recoverable Error**. Rust menggunakan tipe data `Result<T, E>` untuk merepresentasikan hal ini. `Result` adalah sebuah enum dengan 2 variant:
+- `Ok(T)` — menandakan operasi berhasil dan menyimpan nilai hasil nya.
+- `Err(E)` — menandakan operasi gagal dan menyimpan informasi error nya.
+
+Dengan menggunakan `Result` kita bisa memaksa pemanggil function untuk menangani kemungkinan error, sehingga program tidak langsung berhenti seperti `panic!`.
+
+**Contoh:**
+``` rust
+fn connection_cache(host: Option<String>) -> Result<String, String> {
+    match host {
+        None => Err("cache not connected".to_string()),
+        Some(host) => Ok(format!("connecting to cache with host {}", host))
+    }
+}
+
+#[test]
+fn test_recoverable() {
+    let catching = connection_cache(Some(String::from("localhost:6379")));
+    match catching {
+        Ok(message) => println!("Success: {}", message),
+        Err(error) => println!("Error: {}", error),
+    }
+}
+```
+
+**Penjelasan kode:**
+- `-> Result<String, String>` artinya function ini mengembalikan `Result` dimana tipe `T` (nilai sukses) adalah `String` dan tipe `E` (nilai error) juga adalah `String`. Kita bisa menggunakan tipe data apapun untuk keduanya sesuai kebutuhan.
+- `None => Err("cache not connected".to_string())` artinya jikalau `host` kosong maka kembalikan `Err` dengan pesan error `"cache not connected"`.
+- `Some(host) => Ok(format!(...))` artinya jikalau `host` berisi nilai maka kembalikan `Ok` dengan pesan sukses.
+- `match catching` digunakan untuk menangani kedua kemungkinan hasil dari function `connection_cache`. Kita **wajib** menangani baik `Ok` maupun `Err`, jikalau tidak Rust akan memberikan warning pada saat kompilasi.
+- `Ok(message) => println!(...)` artinya jikalau hasilnya sukses maka ambil nilai `message` dari dalam `Ok` dan tampilkan.
+- `Err(error) => println!(...)` artinya jikalau hasilnya error maka ambil pesan `error` dari dalam `Err` dan tampilkan.
+
+Dengan menggunakan `Result` program kita tidak akan berhenti secara tiba-tiba ketika terjadi error, melainkan kita bisa memutuskan sendiri apa yang harus dilakukan ketika terjadi error tersebut.

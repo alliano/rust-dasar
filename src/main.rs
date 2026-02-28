@@ -1050,7 +1050,7 @@ mod bar;
 mod foo;
 mod foo_bar;
 
-use std::{collections::{LinkedList, VecDeque}, ops::Range, sync::Arc};
+use std::{collections::{BTreeMap, BTreeSet, HashMap, HashSet, LinkedList, VecDeque}, ops::Range, sync::Arc};
 
 use bar::say_hello as say_hello_second;
 use foo::say_hello;
@@ -1521,7 +1521,7 @@ fn test_default_generic_type() {
 }
 
 
-use core::ops::Add;
+use core::{ops::Add, panic};
 
 struct Manggo {
     pub quantity: i128
@@ -1788,3 +1788,168 @@ fn test_closure_as_param() {
       // Ini akan error karena mencoba mengakses melalui Index, sedangkan LinkedList tidak memiliki feature mengakses data melalui Index
       // println!("name : {}", names[0]);
   }
+
+  /*
+   * Map
+   * Map merupakan jenis Collection yang berbasis Key value, Berbeda dengan Sequence yang index nya menggunakan number secara otomatis, pada Map kita bisa menggunakan tipe data apapun sebagai key nya, dan value nya juga bisa menggunakan tipe data apapun
+   * pada Map kita bebas menentukan tipe key atau index nya, namun ketika key nya duplikat maka yang akan terjadi adalah data dengan key sebelumnya akan di replace dengan data yang baru, jadi kita tidak bisa memiliki key yang duplikat pada Map
+   * contoh tipe data Map adalah HashMap, BTreeMap, dll
+   */
+
+   /**
+    * HashMap & ThreeMap
+    * Rust memiliki 2 iplementasi Map yaitu HashMap dan BTreeMap, perbedaan yang mencolok pada keduanya adalah
+    * BTreeMap key akan diurutkan sedangkan HashMap keynya tidak diurutkan oleh karena itu operasi unutk memasukan data
+    * pada HashMap cendrung lenih cepat dibanding BTreeMap, namun untuk operasi pencarian data pada BTreeMap cendrung lebih cepat dibanding HashMap karena pada BTreeMap key nya sudah diurutkan sedangkan pada HashMap key nya tidak diurutkan sehingga ketika kita mencari data pada HashMap maka kita harus melakukan pencarian secara linear sedangkan pada BTreeMap kita bisa melakukan pencarian secara binary search karena key nya sudah diurutkan
+    * 
+    */
+  #[test]
+  fn test_hash_map() {
+      let mut names: HashMap<String, String> = HashMap::<String, String>::new();
+      names.insert(String::from("first_name"), String::from("Abdillah"));
+      names.insert(String::from("last_name"), String::from("Kim"));
+
+      println!("first name: {}", &names.get("first_name").unwrap());
+      println!("last name: {}", &names.get("last_name").unwrap());
+  }
+
+
+  #[test]
+  fn test_b_tree_map() {
+      let mut names: BTreeMap<String, String> = BTreeMap::<String, String>::new();
+        names.insert(String::from("first_name"), String::from("Abdillah"));
+        names.insert(String::from("last_name"), String::from("Kim"));
+
+        for entry in &names {
+            println!("{}: {}", entry.0, entry.1);
+        }
+  }
+
+
+  /*
+   * Set
+   * Set merupakan tipe data Collection yang mana data didalama Set tidak boleh duplikat, jika kita memmasukan data set yang sudah ada(duplikat)
+   * Maka secara otomatis data tersebut tidak akan diterima atau tidak akan dimasukan ke dalam Set, jadi kita tidak perlu khawatir tentang data yang duplikat pada Set
+   * contoh tipe data Set adalah HashSet, BTreeSet, dll
+   * 
+   * Set ini tidak seperti data Sequence, data set tidak bisa diakses melalui index
+   */
+
+/*
+ * HashSet & BTreeSet
+ * Rust memiliki 2 implementasi Set yaitu HashSet dan BTreeSet, perbedaan
+ * HashSet tidak menjamin mengenai urutan data karena tujuan HashSet adalah memastikan tidak ada data duplikat secara cepat.
+ * Sedangkan BTreeSet memastikan tidak ada data yang duplikat dan juga mengurutkan data didalam Set nya oleh karena itu Performanya lebih lama daripada HashSet 
+ * Karena perlu mengurutkan data set ketika kita menambhakan atau menghapus data pada BTreeSet
+ */
+
+ #[test]
+ fn test_hash_set() {
+     let mut names: HashSet<String> = HashSet::<String>::new();
+     names.insert(String::from("Abdillah"));
+     names.insert(String::from("Kiim"));
+     names.insert(String::from("Abdillah"));
+
+     for name in &names {
+         println!("Name : {}", name);
+     }
+ }
+
+ #[test]
+ fn test_b_tree_set() {
+     let mut names: BTreeSet<String> = BTreeSet::<String>::new();
+     names.insert(String::from("Abdillah"));
+     names.insert(String::from("Kiim"));
+     names.insert(String::from("Abdillah"));
+
+     for name in &names {
+         println!("Name : {}", name);
+     }
+    }
+
+
+    /*
+     * Iterator
+     * Rust memiliki Modul yang bernama Iterator yang digunakan sebagai mekanisme untuk melakukan operasi
+     * urutan dari data. Jadi semua data yang berisifat multiple misalnya seperti Array, Slice, dan Collection itu memiliki
+     * Feature interator. 
+     * Dengan menggunakan Iterator, Secara otomatis kita dapat melakukan iterasi(perulangan/looping) terhadap data.
+     * 
+     */
+
+    #[test]
+    fn test_iterator() {
+        let numbers: [i32; 5] = [1, 2, 4, 5, 8];
+        let mut interator = numbers.iter();
+
+        while let Some(number) = interator.next() {
+            println!("number: {}", number);
+        }
+
+        for number in interator {
+            println!("number-x: {}", number);
+        }
+    }
+
+    #[test]
+    fn test_iterator_method() {
+        let vector: Vec<i32> = vec![1, 2, 3, 4, 5];
+        println!("vector: {:?}", vector);
+        let sum = vector.iter().sum::<i32>();
+        println!("sum: {}", sum);
+        let count = vector.iter().count();
+        println!("count: {}", count);
+        let doubled: Vec<i32> = vector.iter().map(|x| x * 2).collect();
+        println!("doubled: {:?}", doubled);
+        let odd: Vec<&i32> = vector.iter().filter(|x| *x % 2 != 0).collect::<Vec<&i32>>();
+        println!("odd: {:?}", odd);
+    }
+
+
+    /*
+     * Error Handling
+     * Error Handling merupakan hal yang sudah biasa dalam pengenmbangan applikasi, hampir semua bahasa pemrogramman memiliki Error Handling termasuk Rust
+     * Rust membagi Error Handling menjadi 2 juenis yaitu recoverable(dapat dipulihkan) dan unreciverable(tidak dapat dipulihkan)
+     * Rust tidak memiliki tipe data Exception seperti bahasa pemrogramman lain seperti Java, PHP, Javascript
+     * Pada bahsa pemrogramman Rust unutk error Handling nya menggunakan pendekatan lain
+     */
+
+    /*
+     * Unrecoverable Error
+     * Jika kita mendapatkan jenis error yang tidak adapat dipulihkan maka kita bisa menggunakna jenis error Unrecoverable Error, jenis error ini biasanya terjadi ketika kita melakukan operasi yang tidak valid seperti mengakses index yang diluar batas array, atau melakukan operasi yang tidak valid pada tipe data tertentu
+     * Rust menggunakan macro panic! untuk melakukan hal tersbeut.
+     */
+
+    fn connect_database(host: Option<String>){
+        match host {
+            None => {
+                panic!("host is not provided");
+            }
+            Some(host) => {
+                println!("connecting to database with host {}", host);
+            }
+        }
+    }
+
+    #[test]
+    fn test_panic() {
+        connect_database(None);
+        connect_database(Some(String::from("localhost:5432S")));
+    }
+
+    fn conection_cache(host: Option<String>) -> Result<String, String> {
+        match host {
+            None => Err("cache not connected".to_string()),
+            Some(host) => Ok(format!("connecting to cache with host {}", host))
+        }
+    }
+
+
+    #[test]
+    fn test_recoverable() {
+        let catching = conection_cache(Some(String::from("localhost:6379")));
+        match catching {
+            Ok(message) => println!("Success: {}", message),
+            Err(error) => println!("Error: {}", error),
+        }
+    }

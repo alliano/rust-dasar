@@ -1053,6 +1053,107 @@ fn fungsi_return_value() {
     println!("Hasil faktorial dari {} adalah {}", angka, result);
 }
 ```
+## Recursive Function
+
+**Recursive Function** adalah sebuah function yang memanggil dirinya sendiri. Konsep ini sangat berguna untuk menyelesaikan masalah yang bersifat recursive seperti menghitung factorial, traversal tree, dan lain-lain.
+
+### Syarat-Syarat Recursive Function
+
+Setiap recursive function harus memiliki:
+1. **Base Case (Kondisi Berhenti)** — Kondisi yang mengakhiri rekursi agar tidak infinite loop
+2. **Recursive Case (Kasus Rekursif)** — Memanggil function dirinya sendiri dengan parameter yang berbeda
+
+### Contoh 1: Print Text Recursively
+
+```rust
+fn print_text(text: &str, times: u8) {
+    if times == 0 {
+        return;
+    } else {
+        println!("{}", text);
+    }
+    print_text(text, times - 1);
+}
+
+#[test]
+fn test_recursive_function() {
+    print_text("Mas Kim", 5);
+}
+```
+
+**Penjelasan:**
+- `if times == 0 { return; }` adalah **base case** — kondisi yang menghentikan rekursi
+- `print_text(text, times - 1);` adalah **recursive case** — function memanggil dirinya dengan parameter yang berkurang
+- Function ini akan print "Mas Kim" sebanyak 5 kali
+
+**Alur Eksekusi:**
+```
+print_text("Mas Kim", 5)
+  println!("Mas Kim") → print_text("Mas Kim", 4)
+    println!("Mas Kim") → print_text("Mas Kim", 3)
+      println!("Mas Kim") → print_text("Mas Kim", 2)
+        println!("Mas Kim") → print_text("Mas Kim", 1)
+          println!("Mas Kim") → print_text("Mas Kim", 0)
+            return (base case tercapai)
+```
+
+### Contoh 2: Factorial Recursive
+
+```rust
+fn factorial_recursive(n: u8) -> u8 {
+    if n <= 1 {
+        return 1;  // base case
+    }
+
+    n * factorial_recursive(n - 1)  // recursive case
+}
+
+#[test]
+fn test_factorial_recursive() {
+    let angka: u8 = 5;
+    let result: u8 = factorial_recursive(angka);
+    println!("Hasil faktorial dari {} adalah {}", angka, result);
+    // Output: Hasil faktorial dari 5 adalah 120
+}
+```
+
+**Penjelasan:**
+- `if n <= 1 { return 1; }` adalah base case
+- `n * factorial_recursive(n - 1)` adalah recursive case yang menghitung factorial dengan memanggil dirinya sendiri
+
+**Alur Eksekusi untuk factorial_recursive(5):**
+```
+factorial_recursive(5)
+  = 5 * factorial_recursive(4)
+  = 5 * (4 * factorial_recursive(3))
+  = 5 * (4 * (3 * factorial_recursive(2)))
+  = 5 * (4 * (3 * (2 * factorial_recursive(1))))
+  = 5 * (4 * (3 * (2 * 1)))
+  = 5 * (4 * (3 * 2))
+  = 5 * (4 * 6)
+  = 5 * 24
+  = 120
+```
+
+### Keuntungan Recursive Function
+
+1. **Mudah dipahami untuk masalah recursive** — Kode lebih dekat dengan logika matematis
+2. **Mengurangi duplikasi kode** — Tidak perlu loop manual
+3. **Natural untuk struktur tree/graph** — Lebih intuitif daripada iteratif
+
+### Kekurangan Recursive Function
+
+1. **Stack Overflow** — Jika rekursi terlalu dalam bisa melebihi stack capacity
+2. **Performa lebih lambat** — Setiap call memerlukan overhead function call
+3. **Sulit di-debug** — Call stack yang dalam membuat debugging sulit
+
+### Best Practice
+
+- Gunakan recursive function hanya ketika memang masalahnya bersifat recursive
+- Pastikan base case sudah jelas dan tidak akan terjadi infinite recursion
+- Untuk operasi yang bisa iteratif, pertimbangkan menggunakan loop untuk efisiensi lebih baik
+
+---
 
 ## Penjelasan Function Ownership
 
@@ -3419,108 +3520,6 @@ Lifetime annotation adalah cara Rust untuk memastikan memory safety tanpa garbag
 
 Meskipun lifetime annotation mungkin terlihat kompleks pada awalnya, ini adalah salah satu fitur paling powerful dalam Rust untuk menjamin memory safety.
 
-## Recursive Function
-
-**Recursive Function** adalah sebuah function yang memanggil dirinya sendiri. Konsep ini sangat berguna untuk menyelesaikan masalah yang bersifat recursive seperti menghitung factorial, traversal tree, dan lain-lain.
-
-### Syarat-Syarat Recursive Function
-
-Setiap recursive function harus memiliki:
-1. **Base Case (Kondisi Berhenti)** — Kondisi yang mengakhiri rekursi agar tidak infinite loop
-2. **Recursive Case (Kasus Rekursif)** — Memanggil function dirinya sendiri dengan parameter yang berbeda
-
-### Contoh 1: Print Text Recursively
-
-```rust
-fn print_text(text: &str, times: u8) {
-    if times == 0 {
-        return;
-    } else {
-        println!("{}", text);
-    }
-    print_text(text, times - 1);
-}
-
-#[test]
-fn test_recursive_function() {
-    print_text("Mas Kim", 5);
-}
-```
-
-**Penjelasan:**
-- `if times == 0 { return; }` adalah **base case** — kondisi yang menghentikan rekursi
-- `print_text(text, times - 1);` adalah **recursive case** — function memanggil dirinya dengan parameter yang berkurang
-- Function ini akan print "Mas Kim" sebanyak 5 kali
-
-**Alur Eksekusi:**
-```
-print_text("Mas Kim", 5)
-  println!("Mas Kim") → print_text("Mas Kim", 4)
-    println!("Mas Kim") → print_text("Mas Kim", 3)
-      println!("Mas Kim") → print_text("Mas Kim", 2)
-        println!("Mas Kim") → print_text("Mas Kim", 1)
-          println!("Mas Kim") → print_text("Mas Kim", 0)
-            return (base case tercapai)
-```
-
-### Contoh 2: Factorial Recursive
-
-```rust
-fn factorial_recursive(n: u8) -> u8 {
-    if n <= 1 {
-        return 1;  // base case
-    }
-
-    n * factorial_recursive(n - 1)  // recursive case
-}
-
-#[test]
-fn test_factorial_recursive() {
-    let angka: u8 = 5;
-    let result: u8 = factorial_recursive(angka);
-    println!("Hasil faktorial dari {} adalah {}", angka, result);
-    // Output: Hasil faktorial dari 5 adalah 120
-}
-```
-
-**Penjelasan:**
-- `if n <= 1 { return 1; }` adalah base case
-- `n * factorial_recursive(n - 1)` adalah recursive case yang menghitung factorial dengan memanggil dirinya sendiri
-
-**Alur Eksekusi untuk factorial_recursive(5):**
-```
-factorial_recursive(5)
-  = 5 * factorial_recursive(4)
-  = 5 * (4 * factorial_recursive(3))
-  = 5 * (4 * (3 * factorial_recursive(2)))
-  = 5 * (4 * (3 * (2 * factorial_recursive(1))))
-  = 5 * (4 * (3 * (2 * 1)))
-  = 5 * (4 * (3 * 2))
-  = 5 * (4 * 6)
-  = 5 * 24
-  = 120
-```
-
-### Keuntungan Recursive Function
-
-1. **Mudah dipahami untuk masalah recursive** — Kode lebih dekat dengan logika matematis
-2. **Mengurangi duplikasi kode** — Tidak perlu loop manual
-3. **Natural untuk struktur tree/graph** — Lebih intuitif daripada iteratif
-
-### Kekurangan Recursive Function
-
-1. **Stack Overflow** — Jika rekursi terlalu dalam bisa melebihi stack capacity
-2. **Performa lebih lambat** — Setiap call memerlukan overhead function call
-3. **Sulit di-debug** — Call stack yang dalam membuat debugging sulit
-
-### Best Practice
-
-- Gunakan recursive function hanya ketika memang masalahnya bersifat recursive
-- Pastikan base case sudah jelas dan tidak akan terjadi infinite recursion
-- Untuk operasi yang bisa iteratif, pertimbangkan menggunakan loop untuk efisiensi lebih baik
-
----
-
 ## Smart Pointer
 
 **Smart Pointer** adalah tipe data pointer khusus yang tidak hanya menyimpan alamat memory, tetapi juga memiliki metadata dan kemampuan tambahan. Smart pointer memiliki ownership atas data yang ditunjuknya, berbeda dengan reference biasa yang hanya meminjam data.
@@ -3598,6 +3597,127 @@ Tanpa `Box`, compiler akan error karena `LinkedListNode` mengacu ke dirinya send
 4. **Mutex<T>** — Thread-safe mutable access
 5. **RwLock<T>** — Read-write lock untuk multi-threading
 
+### Dereference Operator
+
+**Dereference** adalah proses mengakses nilai asli yang ditunjuk oleh sebuah pointer atau reference. Di Rust, kita menggunakan operator `*` (asterisk) untuk melakukan dereference.
+
+#### Mengapa Perlu Dereference?
+
+Ketika kita memiliki pointer atau reference dan ingin melakukan operasi pada nilai yang sebenarnya (bukan pada pointernya), kita perlu melakukan dereference.
+
+#### Contoh Dereference dengan Box
+
+```rust
+#[test]
+fn test_dereference() {
+    let value1: Box<i32> = Box::<i32>::new(20);
+    let value2: Box<i32> = Box::<i32>::new(21);
+
+    /*
+     * Dereference
+     * Saat kita menggunakan Reference kadang kita ingin melakukan operasi langsung kepada value-nya
+     * (bukan reference-nya). Untuk melakukan hal tersebut kita bisa menggunakan Dereference
+     * untuk mengakses langsung value reference dengan menggunakan simbol *
+     */
+    let result = *value1 * *value2; // * untuk mengakses nilai aslinya, bukan data reference
+    println!("result : {}", result);  // Output: result : 420
+}
+```
+
+**Penjelasan kode:**
+
+- `Box::<i32>::new(20)` — Membuat Box yang menyimpan nilai 20 pada heap
+- `Box::<i32>::new(21)` — Membuat Box yang menyimpan nilai 21 pada heap
+- `*value1` — Melakukan dereference pada value1 untuk mendapatkan nilai asli (20)
+- `*value2` — Melakukan dereference pada value2 untuk mendapatkan nilai asli (21)
+- `*value1 * *value2` — Melakukan operasi perkalian pada nilai asli: 20 * 21 = 420
+- `println!("result : {}", result)` — Menampilkan hasil 420
+
+#### Dereference dengan Reference Biasa
+
+Dereference juga bisa digunakan dengan reference biasa:
+
+```rust
+#[test]
+fn test_dereference_reference() {
+    let x: i32 = 5;
+    let r: &i32 = &x;  // r adalah reference ke x
+
+    // Tanpa dereference - ini akan error karena kita bandingkan reference dengan number
+    // if r == 5 { }  // ERROR
+
+    // Dengan dereference - mengakses nilai asli dari reference
+    if *r == 5 {
+        println!("Nilai dari reference adalah 5");
+    }
+}
+```
+
+#### Dereference Otomatis (Deref Coercion)
+
+Rust memiliki fitur **deref coercion** yang memungkinkan compiler secara otomatis melakukan dereference dalam situasi tertentu:
+
+```rust
+#[test]
+fn test_deref_coercion() {
+    let value: Box<i32> = Box::new(42);
+
+    // Tanpa coercion, kita perlu:
+    // println!("Value: {}", *value);
+
+    // Dengan coercion, Rust otomatis dereference:
+    println!("Value: {}", value);  // Rust otomatis melakukan *value
+}
+```
+
+Fitur ini membuat kode lebih ringkas dan mudah dibaca.
+
+#### Pointer Dereference Chaining
+
+Untuk pointer yang nested (bersarang), kita bisa melakukan dereference berkali-kali:
+
+```rust
+#[test]
+fn test_multiple_dereference() {
+    let value: Box<Box<i32>> = Box::new(Box::new(99));
+
+    // Dereference sekali: mendapatkan Box<i32>
+    let inner: Box<i32> = (*value).clone();
+
+    // Dereference dua kali: mendapatkan i32
+    let final_value: i32 = **value;
+
+    println!("Final value: {}", final_value);  // Output: 99
+}
+```
+
+#### Kapan Menggunakan Dereference?
+
+1. **Operasi Matematika** — Ketika ingin operasi pada nilai asli pointer
+2. **Perbandingan** — Ketika ingin membandingkan nilai, bukan pointer
+3. **Akses Field** — Ketika ingin akses field dari struct yang ditunjuk pointer
+4. **Pengubahan Nilai** — Ketika ingin memodifikasi nilai melalui mutable reference
+
+#### Tabel: Dereference vs Non-Dereference
+
+| Operasi | Tanpa Dereference | Dengan Dereference |
+|---------|---|---|
+| Akses nilai | `*ptr` | ✓ (dapatkan nilai asli) |
+| Bandingkan pointer | `ptr1 == ptr2` | ✓ (bandingkan address) |
+| Operasi nilai | `*ptr + 5` | ✓ (operasi pada nilai) |
+| Akses field | `(*ptr).field` atau `ptr->field` | ✓ (bisa akses field) |
+
+#### Perbedaan: Dereference vs Borrowing
+
+- **Borrowing** (`&x`) — Membuat reference/pinjaman ke data
+- **Dereference** (`*ptr`) — Mengakses data yang ditunjuk reference/pointer
+
+```rust
+let x = 5;
+let r = &x;      // Borrowing - r adalah reference ke x
+let y = *r;      // Dereference - y adalah nilai asli dari r (5)
+```
+
 ### Perbedaan: Reference vs Smart Pointer
 
 | Aspek | Reference (&T) | Smart Pointer (Box<T>) |
@@ -3611,3 +3731,5 @@ Tanpa `Box`, compiler akan error karena `LinkedListNode` mengacu ke dirinya send
 ### Kesimpulan
 
 Smart pointer adalah alat powerful dalam Rust untuk mengelola memory dengan lebih fleksibel. `Box<T>` adalah yang paling sederhana, namun ada banyak varian untuk kebutuhan berbeda seperti multi-ownership (`Rc<T>`), multi-threading (`Arc<T>`), dan interior mutability (`RefCell<T>`).
+
+Dereference adalah mekanisme fundamental yang memungkinkan kita mengakses nilai asli yang ditunjuk oleh pointer atau reference, sangat penting untuk operasi pada data yang disimpan di memory.

@@ -3245,4 +3245,369 @@ fn start_server(host: Option<String>) -> Result<String, String> {
 }
 ```
 
+## Lifetime
+
+Pada materi Ownership dan Reference kita sudah mengetahui bahwa tiap data atau reference memiliki **lifetime** (alur hidup) yang sudah ditentukan. Secara default, lifetime pada bahasa pemrogramman Rust ditentukan mengikuti scope dari variable tersebut, sehingga hal tersebut sangat *safety*.
+
+Rust juga melakukan **borrow check** pada saat melakukan kompilasi kode program untuk memastikan tidak ada masalah **Dangling Reference**, yaitu reference kepada nilai yang sudah tidak ada di memory (sudah dihapus/sudah keluar dari scope).
+
+```rs
+#[test]
+fn test_lifetime() {
+    let x: &i32;
+    {
+        let y: i32 = 10;
+        x = &y; // ERROR: nilai y akan dihapus ketika keluar dari inner scope
+    }
+    // println!("number x: {}", x); // tidak bisa diakses, y sudah tidak ada
+}
+```
+
+**Penjelasan kode:**
+- `let x: &i32` — mendeklarasikan variabel `x` sebagai reference ke nilai `i32`, namun belum diisi.
+- `{ let y: i32 = 10; }` — membuat inner scope. Variabel `y` hanya hidup di dalam blok `{ }` ini. Begitu keluar dari blok, `y` akan dihapus dari memori.
+- `x = &y` — mencoba menyimpan reference ke `y` di dalam `x`. Ini akan **gagal dikompilasi** karena `x` hidup lebih lama dari `y`. Jika diizinkan, `x` akan menjadi *dangling reference* (menunjuk ke memori yang sudah kosong).
+- Rust mendeteksi masalah ini saat kompilasi (bukan saat runtime), sehingga program tidak pernah bisa berjalan dalam keadaan berbahaya.
+
+## Lifetime pada Function
+
+Salah satu hal yang mungkin agak membingungkan pada bahasa pemrogramman Rust yaitu ketika menggunakan **2 atau lebih parameter reference** pada function, sekaligus kita jadikan sebagai return value (nilai kembalian berupa reference).
+
+Pada kasus seperti ini Rust akan bingung, karena tidak tahu harus melakukan *borrowing* kepada parameter reference yang mana untuk return value tersebut.
+
+```rs
+fn fn_lifetime(param1: &str, param2: &str) -> &str {
+    if param1.len() > param2.len() {
+        param1
+    } else {
+        param2
+    }
+}
+```
+
+**Penjelasan kode:**
+- `fn fn_lifetime(param1: &str, param2: &str) -> &str` — function ini menerima dua parameter berupa reference (`&str`) dan mengembalikan reference (`&str`).
+- Masalahnya: Rust tidak tahu apakah return value berasal dari `param1` atau `param2`. Akibatnya, Rust tidak dapat memastikan bahwa reference yang dikembalikan masih valid (belum dihapus) ketika digunakan oleh pemanggil function.
+- Kode di atas **akan error saat dikompilasi** dengan pesan: *"missing lifetime specifier"*.
+
+**Solusinya — Lifetime Annotation:**
+
+Untuk menyelesaikan masalah ini kita perlu menambahkan **lifetime annotation** dengan simbol `'a` agar Rust tahu bahwa return value memiliki lifetime yang sama dengan kedua parameter:
+
+```rs
+fn fn_lifetime<'a>(param1: &'a str, param2: &'a str) -> &'a str {
+    if param1.len() > param2.len() {
+        param1
+    } else {
+        param2
+    }
+}
+```
+
+**Penjelasan lifetime annotation:**
+- `<'a>` — mendeklarasikan lifetime parameter bernama `'a` (bisa dibaca: *lifetime a*).
+- `param1: &'a str` dan `param2: &'a str` — menyatakan bahwa kedua parameter reference harus memiliki lifetime minimal `'a`.
+- `-> &'a str` — menyatakan bahwa return value juga memiliki lifetime `'a`, artinya reference yang dikembalikan akan valid selama `'a` masih valid.
+- Dengan annotation ini, Rust bisa memastikan bahwa reference yang dikembalikan tidak akan menjadi *dangling reference* karena lifetimenya sudah terikat dengan lifetime input.
+
 Dengan menggunakan ? operator kode kita menjadi lebih ringkas, mudah dibaca, dan tidak ada pola yang berulang-ulang. Oleh karena itu ? operator sangat berguna ketika kita bekerja dengan `Result` yang banyak.
+
+## Lifetime Annotation
+
+Setelah kita memahami konsep lifetime pada function, kini saatnya kita mempelajari **lifetime annotation** secara lebih mendalam. Lifetime annotation adalah cara kita memberitahu Rust tentang hubungan lifetime antara parameter reference dan return value.
+
+### Apa itu Lifetime Annotation?
+
+Lifetime annotation adalah anotasi (penjelasan) yang kita berikan kepada Rust untuk menspesifikasikan **berapa lama** sebuah reference akan tetap valid. Kita menggunakan tanda petik satu (`'`) diikuti dengan nama lifetime (biasanya huruf kecil seperti `'a`, `'b`, `'c`, dsb).
+
+**Sintaks umum:**
+```rs
+fn nama_function<'lifetime>(param1: &'lifetime str, param2: &'lifetime str) -> &'lifetime str {
+    // implementasi
+}
+```
+
+### Mengapa Lifetime Annotation Diperlukan?
+
+Ketika function menerima 2 atau lebih parameter reference yang akan dikembalikan sebagai return value, Rust tidak bisa menentukan secara otomatis lifetime mana yang harus digunakan. Oleh karena itu, kita harus secara eksplisit memberitahu Rust bahwa return value lifetime-nya terikat dengan salah satu atau semua parameter.
+
+### Contoh Praktis - Mencari String Terpanjang
+
+Mari kita lihat kode yang Anda pilih:
+
+```rs
+fn longgest<'r>(param1: &'r str, param2: &'r str) -> &'r str {
+    if param1.len() > param2.len() {
+        param1
+    } else {
+        param2
+    }
+}
+
+#[test]
+fn test_lifetime_annoatation() {
+    let result = longgest("Abdillah", "Kim");
+    println!("the longest name is {}", result);
+}
+```
+
+**Penjelasan kode:**
+
+- `fn longgest<'r>` — Mendeklarasikan function dengan lifetime parameter bernama `'r` (bisa dibaca: *lifetime r*).
+
+- `param1: &'r str, param2: &'r str` — Menyatakan bahwa kedua parameter berupa string reference yang memiliki lifetime `'r`. Ini artinya kedua parameter harus tetap valid selama `'r`.
+
+- `-> &'r str` — Menyatakan bahwa return value juga memiliki lifetime `'r`. Dengan ini, Rust tahu bahwa reference yang dikembalikan akan valid selama kedua parameter masih valid.
+
+- `if param1.len() > param2.len()` — Membandingkan panjang string. Jika `param1` lebih panjang, kembalikan `param1`, jika tidak kembalikan `param2`.
+
+- `let result = longgest("Abdillah", "Kim")` — Memanggil function dengan dua string literal. Rust akan secara otomatis menentukan lifetime kedua string ini dan memastikan `result` hanya bisa diakses selama kedua string masih valid.
+
+### Keuntungan Lifetime Annotation
+
+1. **Keamanan Memory** — Rust bisa mendeteksi potensi dangling reference pada saat kompilasi, bukan saat runtime.
+
+2. **Fleksibilitas** — Kita bisa menyatakan bahwa return value lifetime-nya sama dengan salah satu atau semua parameter.
+
+3. **Clarity** — Kode menjadi lebih jelas tentang relationship antara parameter dan return value.
+
+### Kasus Lain - Lifetime Berbeda untuk Setiap Parameter
+
+Jika return value hanya terikat dengan satu parameter, kita bisa menggunakan lifetime yang berbeda:
+
+```rs
+fn get_first<'a, 'b>(param1: &'a str, param2: &'b str) -> &'a str {
+    param1  // return value terikat dengan lifetime 'a, bukan 'b
+}
+```
+
+Dalam kasus ini, return value akan valid selama `param1` masih valid, terlepas dari `param2`.
+
+### Lifetime Annotation pada Struct
+
+Lifetime annotation juga bisa digunakan pada struct jika struct tersebut menyimpan reference:
+
+```rs
+struct User<'a> {
+    name: &'a str,
+    email: &'a str
+}
+
+#[test]
+fn test_lifetime_struct() {
+    let name = "Abdillah";
+    let email = "abdillah@example.com";
+
+    let user = User {
+        name,
+        email
+    };
+
+    println!("User: {} ({})", user.name, user.email);
+}
+```
+
+Struct `User` memiliki lifetime `'a` yang memastikan bahwa reference `name` dan `email` akan tetap valid selama struct `User` masih digunakan.
+
+### Kesimpulan
+
+Lifetime annotation adalah cara Rust untuk memastikan memory safety tanpa garbage collector. Dengan menggunakan lifetime annotation:
+
+- Kita memberitahu Rust berapa lama sebuah reference akan valid.
+- Rust bisa melakukan borrow check pada saat kompilasi untuk memastikan tidak ada dangling reference.
+- Kode kita menjadi lebih aman dan dapat diprediksi.
+
+Meskipun lifetime annotation mungkin terlihat kompleks pada awalnya, ini adalah salah satu fitur paling powerful dalam Rust untuk menjamin memory safety.
+
+## Recursive Function
+
+**Recursive Function** adalah sebuah function yang memanggil dirinya sendiri. Konsep ini sangat berguna untuk menyelesaikan masalah yang bersifat recursive seperti menghitung factorial, traversal tree, dan lain-lain.
+
+### Syarat-Syarat Recursive Function
+
+Setiap recursive function harus memiliki:
+1. **Base Case (Kondisi Berhenti)** — Kondisi yang mengakhiri rekursi agar tidak infinite loop
+2. **Recursive Case (Kasus Rekursif)** — Memanggil function dirinya sendiri dengan parameter yang berbeda
+
+### Contoh 1: Print Text Recursively
+
+```rust
+fn print_text(text: &str, times: u8) {
+    if times == 0 {
+        return;
+    } else {
+        println!("{}", text);
+    }
+    print_text(text, times - 1);
+}
+
+#[test]
+fn test_recursive_function() {
+    print_text("Mas Kim", 5);
+}
+```
+
+**Penjelasan:**
+- `if times == 0 { return; }` adalah **base case** — kondisi yang menghentikan rekursi
+- `print_text(text, times - 1);` adalah **recursive case** — function memanggil dirinya dengan parameter yang berkurang
+- Function ini akan print "Mas Kim" sebanyak 5 kali
+
+**Alur Eksekusi:**
+```
+print_text("Mas Kim", 5)
+  println!("Mas Kim") → print_text("Mas Kim", 4)
+    println!("Mas Kim") → print_text("Mas Kim", 3)
+      println!("Mas Kim") → print_text("Mas Kim", 2)
+        println!("Mas Kim") → print_text("Mas Kim", 1)
+          println!("Mas Kim") → print_text("Mas Kim", 0)
+            return (base case tercapai)
+```
+
+### Contoh 2: Factorial Recursive
+
+```rust
+fn factorial_recursive(n: u8) -> u8 {
+    if n <= 1 {
+        return 1;  // base case
+    }
+
+    n * factorial_recursive(n - 1)  // recursive case
+}
+
+#[test]
+fn test_factorial_recursive() {
+    let angka: u8 = 5;
+    let result: u8 = factorial_recursive(angka);
+    println!("Hasil faktorial dari {} adalah {}", angka, result);
+    // Output: Hasil faktorial dari 5 adalah 120
+}
+```
+
+**Penjelasan:**
+- `if n <= 1 { return 1; }` adalah base case
+- `n * factorial_recursive(n - 1)` adalah recursive case yang menghitung factorial dengan memanggil dirinya sendiri
+
+**Alur Eksekusi untuk factorial_recursive(5):**
+```
+factorial_recursive(5)
+  = 5 * factorial_recursive(4)
+  = 5 * (4 * factorial_recursive(3))
+  = 5 * (4 * (3 * factorial_recursive(2)))
+  = 5 * (4 * (3 * (2 * factorial_recursive(1))))
+  = 5 * (4 * (3 * (2 * 1)))
+  = 5 * (4 * (3 * 2))
+  = 5 * (4 * 6)
+  = 5 * 24
+  = 120
+```
+
+### Keuntungan Recursive Function
+
+1. **Mudah dipahami untuk masalah recursive** — Kode lebih dekat dengan logika matematis
+2. **Mengurangi duplikasi kode** — Tidak perlu loop manual
+3. **Natural untuk struktur tree/graph** — Lebih intuitif daripada iteratif
+
+### Kekurangan Recursive Function
+
+1. **Stack Overflow** — Jika rekursi terlalu dalam bisa melebihi stack capacity
+2. **Performa lebih lambat** — Setiap call memerlukan overhead function call
+3. **Sulit di-debug** — Call stack yang dalam membuat debugging sulit
+
+### Best Practice
+
+- Gunakan recursive function hanya ketika memang masalahnya bersifat recursive
+- Pastikan base case sudah jelas dan tidak akan terjadi infinite recursion
+- Untuk operasi yang bisa iteratif, pertimbangkan menggunakan loop untuk efisiensi lebih baik
+
+---
+
+## Smart Pointer
+
+**Smart Pointer** adalah tipe data pointer khusus yang tidak hanya menyimpan alamat memory, tetapi juga memiliki metadata dan kemampuan tambahan. Smart pointer memiliki ownership atas data yang ditunjuknya, berbeda dengan reference biasa yang hanya meminjam data.
+
+### Mengapa Smart Pointer?
+
+Dalam sistem ownership Rust, reference hanya meminjam data. Tapi kadang kita membutuhkan tipe data yang memiliki ownership sekaligus bersifat seperti pointer. Smart pointer dirancang untuk kasus-kasus seperti ini.
+
+### Box — Pointer Paling Sederhana
+
+`Box<T>` adalah smart pointer paling sederhana yang mengalokasikan data pada heap alih-alih stack.
+
+**Sintaks:**
+```rust
+let data: Box<T> = Box::<T>::new(value);
+```
+
+**Contoh:**
+```rust
+#[test]
+fn test_smart_pointer() {
+    let number: Box<i32> = Box::<i32>::new(10);
+
+    show_number(*number);  // dereference dengan *
+    print_number_refrence(&number);
+}
+
+fn show_number(number: i32) {
+    println!("{}", number);
+}
+
+fn print_number_refrence(number: &i32) {
+    println!("{}", number);
+}
+```
+
+**Penjelasan:**
+- `Box::<i32>::new(10)` — membuat Box yang menyimpan nilai 10 pada heap
+- `*number` — dereference operator untuk mengakses nilai di dalam Box
+- `&number` — membuat reference ke Box
+
+### Kapan Menggunakan Box?
+
+1. **Recursive Type** — Ketika type mengacu ke dirinya sendiri (seperti linked list)
+2. **Large Data** — Ketika data terlalu besar untuk disimpan di stack
+3. **Trait Object** — Ketika butuh polymorphism dengan trait
+
+### Contoh: Recursive Type dengan Box
+
+```rust
+enum LinkedListNode {
+    Value(i32, Box<LinkedListNode>),
+    Empty
+}
+
+#[test]
+fn test_linked_list_box() {
+    let list = LinkedListNode::Value(
+        1,
+        Box::new(LinkedListNode::Value(
+            2,
+            Box::new(LinkedListNode::Empty)
+        ))
+    );
+}
+```
+
+Tanpa `Box`, compiler akan error karena `LinkedListNode` mengacu ke dirinya sendiri (infinite size). `Box` mengatasi ini dengan menyimpan pointer.
+
+### Smart Pointer Lain di Rust
+
+1. **Rc<T>** — Reference Counting untuk multiple ownership
+2. **Arc<T>** — Atomic Reference Counting untuk multi-threading
+3. **RefCell<T>** — Interior mutability pattern
+4. **Mutex<T>** — Thread-safe mutable access
+5. **RwLock<T>** — Read-write lock untuk multi-threading
+
+### Perbedaan: Reference vs Smart Pointer
+
+| Aspek | Reference (&T) | Smart Pointer (Box<T>) |
+|-------|---|---|
+| **Ownership** | Meminjam | Memiliki |
+| **Lifetime** | Terbatas pada scope pemberi | Sesuai lifetime pointer |
+| **Dealokasi** | Manual | Otomatis saat pointer drop |
+| **Lokasi Data** | Bisa stack atau heap | Selalu heap |
+| **Overhead** | Minimal | Ada metadata |
+
+### Kesimpulan
+
+Smart pointer adalah alat powerful dalam Rust untuk mengelola memory dengan lebih fleksibel. `Box<T>` adalah yang paling sederhana, namun ada banyak varian untuk kebutuhan berbeda seperti multi-ownership (`Rc<T>`), multi-threading (`Arc<T>`), dan interior mutability (`RefCell<T>`).

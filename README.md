@@ -3718,6 +3718,195 @@ let r = &x;      // Borrowing - r adalah reference ke x
 let y = *r;      // Dereference - y adalah nilai asli dari r (5)
 ```
 
+---
+
+### Deref Trait — Custom Dereference
+
+Secara default, hanya reference (`&T`) dan `Box<T>` yang bisa melakukan dereference dengan operator `*`. Bagaimana jika kita ingin membuat tipe data custom kita sendiri yang juga bisa melakukan dereference seperti `Box<T>`?
+
+Jawabannya adalah menggunakan **Deref Trait**. Dengan mengimplementasikan `Deref` trait, kita bisa membuat tipe data custom mendukung operasi dereference dengan operator `*`.
+
+#### Apa itu Deref Trait?
+
+`Deref` adalah sebuah trait yang mendefinisikan bagaimana cara melakukan dereference pada tipe data kita. Trait ini berada di module `std::ops`.
+
+**Sintaks:**
+```rust
+use std::ops::Deref;
+
+impl<T> Deref for TipeDataKita<T> {
+    type Target = T;  // Tipe yang menjadi target dereference
+
+    fn deref(&self) -> &Self::Target {
+        // Implementasi logika dereference
+    }
+}
+```
+
+#### Contoh: Custom Pointer dengan Deref Trait
+
+Mari kita lihat kode yang Anda pilih:
+
+```rust
+use std::ops::Deref;
+
+struct MyValue<T> {
+    value: T,
+}
+
+impl<T> Deref for MyValue<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.value
+    }
+}
+
+#[test]
+fn test_dreference_struct() {
+    let my_value = MyValue { value: 42 };
+    let real_value: i32 = *my_value; // melakukan dereference pada struct MyValue
+    println!("real value: {}", real_value);  // Output: 42
+}
+```
+
+**Penjelasan kode:**
+
+- `struct MyValue<T> { value: T }` — Mendefinisikan struct generic yang menyimpan value bertipe T
+
+- `impl<T> Deref for MyValue<T>` — Mengimplementasikan Deref trait untuk struct MyValue
+
+- `type Target = T` — Mendefinisikan tipe target dereference adalah T (tipe yang disimpan dalam struct)
+
+- `fn deref(&self) -> &Self::Target` — Method yang mendefinisikan apa yang dikembalikan saat dereference:
+  - Menerima `&self` (reference ke MyValue)
+  - Mengembalikan `&Self::Target` (reference ke T, yaitu nilai yang disimpan)
+  - Implementasinya: `&self.value`
+
+- `*my_value` — Melakukan dereference pada MyValue untuk mendapatkan nilai aslinya (42)
+
+#### Penjelasan Alur Dereference
+
+```
+MyValue { value: 42 }
+        ↓ (dereference dengan *)
+        ↓ (memanggil deref() method)
+        ↓
+       42 (nilai i32 yang sebenarnya)
+```
+
+#### Contoh Lain: Custom String Wrapper
+
+```rust
+use std::ops::Deref;
+
+struct MyString {
+    data: String,
+}
+
+impl Deref for MyString {
+    type Target = String;
+
+    fn deref(&self) -> &Self::Target {
+        &self.data
+    }
+}
+
+#[test]
+fn test_custom_string_deref() {
+    let my_str = MyString {
+        data: String::from("Hello, Rust!")
+    };
+
+    // Bisa menggunakan * untuk dereference
+    println!("Dereferenced: {}", *my_str);  // Output: Hello, Rust!
+
+    // Bisa mengakses methods dari String melalui deref coercion
+    println!("Length: {}", my_str.len());   // Output: Length: 13
+}
+```
+
+#### Deref Coercion dengan Custom Type
+
+Saat kita mengimplementasikan `Deref`, Rust secara otomatis melakukan **deref coercion** — mengubah `MyValue<T>` menjadi `&T` ketika diperlukan:
+
+```rust
+fn print_value(value: &i32) {
+    println!("Value: {}", value);
+}
+
+#[test]
+fn test_deref_coercion_custom() {
+    let my_value = MyValue { value: 99 };
+
+    // Tanpa deref coercion, harus:
+    // print_value(&*my_value);
+
+    // Dengan deref coercion, Rust otomatis:
+    print_value(&my_value);  // Rust otomatis: MyValue -> i32
+}
+```
+
+#### DerefMut Trait
+
+Selain `Deref` untuk immutable reference, ada juga `DerefMut` untuk mutable reference:
+
+```rust
+use std::ops::{Deref, DerefMut};
+
+struct MyMutableValue<T> {
+    value: T,
+}
+
+impl<T> Deref for MyMutableValue<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.value
+    }
+}
+
+impl<T> DerefMut for MyMutableValue<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.value
+    }
+}
+
+#[test]
+fn test_deref_mut() {
+    let mut my_value = MyMutableValue { value: 42 };
+
+    // Dereference dan modifikasi nilai
+    *my_value = 100;
+
+    println!("Modified value: {}", my_value.value);  // Output: 100
+}
+```
+
+#### Kapan Menggunakan Deref Trait?
+
+1. **Custom Pointer Types** — Membuat tipe pointer custom dengan behavior tersendiri
+2. **Wrapper Types** — Membungkus type lain dengan fungsi tambahan
+3. **API Ergonomics** — Membuat API lebih mudah digunakan dengan deref coercion
+4. **Domain-Specific Types** — Tipe khusus yang perlu mendukung dereference
+
+#### Perbedaan: Deref vs Dereference
+
+| Aspek | Deref Trait | Operator * |
+|-------|---|---|
+| **Definisi** | Trait yang mendefinisikan behavior dereference | Operator untuk melakukan dereference |
+| **Implementasi** | Dibuat oleh programmer | Built-in operator |
+| **Penggunaan** | `impl Deref for MyType` | `*value` |
+| **Scope** | Custom types yang implement Deref | Semua tipe yang mendukung dereference |
+| **Coercion** | Triggers deref coercion otomatis | Explicit dereference |
+
+#### Best Practice
+
+1. **Implement Deref untuk wrapper types** — Jika membuat wrapper, implement Deref agar transparent
+2. **Keep deref simple** — Jangan lakukan operasi kompleks di method deref()
+3. **Use DerefMut carefully** — Mutable dereference perlu pertimbangan ownership
+4. **Document dereference behavior** — Jelaskan apa yang dikembalikan dari deref()
+
 ### Perbedaan: Reference vs Smart Pointer
 
 | Aspek | Reference (&T) | Smart Pointer (Box<T>) |

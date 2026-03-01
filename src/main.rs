@@ -1050,7 +1050,7 @@ mod bar;
 mod foo;
 mod foo_bar;
 
-use std::{collections::{BTreeMap, BTreeSet, HashMap, HashSet, LinkedList, VecDeque}, ops::Range, sync::Arc};
+use std::{collections::{BTreeMap, BTreeSet, HashMap, HashSet, LinkedList, VecDeque}, f32::consts::E, ops::Range, string, sync::Arc};
 
 use bar::say_hello as say_hello_second;
 use foo::say_hello;
@@ -2007,3 +2007,248 @@ fn test_closure_as_param() {
         Err(error) => println!("Error: {}", error),
     }    
  }
+
+
+ /*
+  * Lifetime
+  * Pada materi Ownership dan reference kita sudah mengetahui bahwa tiap data atau refrence memiliki lifetime (alur hidup) yang sudah ditentukan
+  * Secara default, Livetime pada bahasa pemrogramman Rust ditentukan megikuti scope variable sehingga hal tersebut sangat safety.
+  * Rust juga melakukan borrow check pada saat melakukan kompilasi kode program untuk memastikan tidak ada masalah Dangling Reference(reference kepada nilai yang sudah tidak ada dimemory/sudah dihapus)
+  */
+
+  #[test]
+  fn test_lifetime() {
+      let x: &i32;
+      {
+        let y: i32 = 10;
+        x = &y; // ini akan error ketika kompilasi karena nilai dari y akan dihapus ketika keluar dari inner scope
+      }
+
+    //   println!("number x: {}", x);
+  }
+
+  /*
+   * Lifetime pada function
+   * Salahsatu yang mungkin agak membingungkan pada bahsa pemrogramman Rust yaitu ketika menggunakan 2 atau lebih parameter reference pada function
+   * sekaligus kita jadikan sebagai return value.
+   * Pada kasus seperti ini Rust akan bingung karena harus melakukan borrowing kepada parameter reference yang mana.
+   */
+// fn fn_lifetime(param1: &str, param2: &str) -> &str {
+//     if param1.len() > param1.len() {
+//         param1
+//     }else {
+//         param2
+//     }
+// }
+
+
+/**
+ * Lifetime annotation syntax
+ * pada kasus kita sebelumnya lifetime pada parmeter function, Rust menyediakan feature yang namanya Lifetime annotation
+ * yang mana feature tersebut kita gunakan untuk memberi tau Rust parameter yang mana yang mungkin aknan dilakukan borrowing
+ * 
+ * Untuk menggunakan Lifetime annotation mirip seperti menggunakan Generic, hanya saja kita menambahkan tanda petik 1(') sebelum nama 
+ * annotation nya, dan kita juga bisa menggunakan nama lain untuk annotation nya, namun biasanya kita menggunakan huruf kecil seperti 'a,
+ * 'b, 'c, dll untuk menandakan bahwa itu adalah annotation untuk lifetime, dan kita juga bisa menggunakan nama lain seperti 'param1, 'param2, dll untuk menandakan bahwa itu adalah annotation untuk lifetime pada parameter tertentu.
+ * 
+ */
+fn longgest<'r>(param1: &'r str, param2: &'r str) -> &'r str {
+    if param1.len() > param2.len() {
+        param1
+    } else {
+        param2
+    }
+}
+
+#[test]
+fn test_lifetime_annoatation() {
+    let result = longgest("Abdillah", "Kim");
+    println!("the longest name is {}", result);
+}
+
+/*
+ * Lifetime Annonation Tidak mengubah Waktu Hidup
+ * Lifetime Annotation tidak mengubah waktu alur hidup, melainkan hanya sebagai penanda untuk
+ * Membantu Rust Borrow Checker
+ * 
+ * Oleh karena itu jika ternyata alur hidurp variabel sudah selesai maka bisa terjadi Error speperti sebelumnya yaitu error
+ * Dangling ReferenceSSS
+ */
+
+ #[test]
+ fn test_lifetime_dangling_reference() {
+     let name = String::from("Abdilah");
+     let result: &str;
+     {
+        let last_name = String::from("Kim");
+        result = longgest(&name, &last_name); // ini bakal error karena nilai dari last_name akan dihapus ketika scope sudah selesai(mati)
+     }
+ }
+
+ /*
+  * Lifetime Annotation Pada Struct
+  * Lifetime Annotation mirip dengan Generic, kita bisa gunakna lifetime tersebut pada struct 
+  * Untuk menggunakan Lifetime anotation pada struct kita bisa mendai field dengan tipe Reference
+  * Dengan demikian kita bisa menggunakan Lifetime Annotation pada struct 
+  */
+
+  struct Threder<'a, 'b> { // 'a => Lifetime annotation pada struct
+    id: i32,
+    name: &'a str, // menggunalan Lifetime annotation 
+    broker_code: & 'b str,
+    win_rate: u32
+  }
+
+  fn lg_id<'a>(threder1: &'a Threder, threder2: &'a Threder) -> &'a str {
+      if threder1.id > threder2.id {
+        threder1.name
+      }else {
+          threder2.name
+      }
+  }
+
+  #[test]
+  fn lifetime_annotation_struct() {
+      let threder1 = Threder { id: 1, name: "Abdillah", broker_code: "Ox", win_rate: 10};
+      let threder2 = Threder { id: 2, name: "Kim", broker_code: "CX", win_rate: 219 };
+      let result = lg_id(&threder1, &threder2);
+      println!("longger name : {}", result);
+  }
+
+
+  /*
+   * Lifetime annotation ini berguna bukan ketika membuat instance nya, melainkan ketika kita 
+   * membutuhkan argumen reference sebagai return value nya. agar rust tau mana yang 
+   * akan di borrow
+   */
+  impl <'a, 'b>Threder<'a, 'b> {
+
+    fn winner_tread(&self, threder: &Threder<'a, 'b>) -> &'a str {
+        if self.win_rate > threder.win_rate {
+            self.name
+        }else {
+            threder.name
+        }
+    }
+  }
+
+
+  #[test]
+  fn test_lifetime_annotation_method() {
+      let threder1 = Threder {
+        id: 1,
+        name: "Abdillah",
+        broker_code: "XC",
+        win_rate: 100
+      };
+      let threder2 = Threder {
+        id: 2,
+        name: "Kim",
+        broker_code: "XL",
+        win_rate: 10000
+      };
+
+      let winner = threder1.winner_tread(&threder2);
+      println!("win threader : {}", winner);
+
+  }
+
+/*
+ * Attribute
+ * Atrribute merupakan cara menambah metadata(informasi tembahan) kepada kode yang kia buat
+ * Sintax Attribute pada Rust mirip dengan bahasa pemrogramman C# yaitu menggunakan sibol #[nama attribute]
+ * Pada bahasa pemrogramman lain misalnya Typescript Attribut ini disebut dekorator, atau pada java biasa disebut
+ * sebagai Annotation
+ * 
+ * Nama nama Attribute pada Rust sudah disedikan kita bisa lihat nama-nama tersebut pada dokumentasi resminya: https://doc.rust-lang.org/reference/attributes.html
+ */
+
+ /*
+  * Drive Attribute
+  * salah satu attribute yang sering digunakan yaitu Drive
+  * Drive attribute adalah Attribute yang digunakan unutk membuat implementasi trait secara otomatis
+  * Namin tidak semua trait bisa otomatis diimplementasikan dengan Drive, hanya yang sudah ditentukan saja
+  */
+
+  /**
+   * struct Investor secara otomatis akan implementasi Debug, PartialEq, dan PartialOrd
+   */
+  #[derive(Debug, PartialEq, PartialOrd)]
+  struct Investor {
+    id: i32,
+    name: String,
+    balance: i128,
+    broker_code: String,
+    win: i32,
+    los: i32
+  } 
+
+
+  #[test]
+  fn test_attribute() {
+      let investor = Investor {
+        id: 1,
+        name: "Kim".to_string(),
+        balance: 1000000,
+        broker_code: "CP".to_string(),
+        los: 0,
+        win: 10000
+      };
+
+      let investor2 = Investor {
+        id: 2,
+        name: "Abdillah".to_string(),
+        balance: 20000,
+        broker_code: "KZ".to_string(),
+        los: 400,
+        win: 80
+      };
+
+      println!("is Eqqueal {}", investor == investor2);
+      println!("{:?}", investor);
+  }
+
+/*
+ * Melihat Hasil Drive
+ * Tidak ada hal magic pada Rust, sebenarnya ketika kita menggunakan Drive attribute, ketika proses kompilasi Rust akan membuat kode
+ * yang dibutuhkan sebelum kompilasi.
+ * Untuk melihat kode yang dibuat otomatis kita bisa menggunakan Plugin cargo-expand.
+ * 
+ * Sebelum menggunakan cargo expand kita harus menginstall nya terlebih dahulu menggunakan command
+ * cargo install cargo-expand
+ * Setelh terinstall kita bisa melihat kode yang dibuat dengan command 
+ * cargo expand [nama module]
+ * atau
+ * cargo expand --test [nama test]
+ */
+
+
+
+
+ /*
+  * Smart Pointer
+  * Pointer merupakan konsep yang umum yang mana sebuah variabel berisi alamat lokasi dari data di memory
+  * Pada bahsa pemrogramman Rust pointer merupakan reference
+  * Smart pointer adalah tipe data pointer namun memiliki metadata(informasi tambahan) dan kemampuhan lain selain sebagai
+  * petunjuk lokasi ke data didalam memory
+  * Pada Rust yang menggunakankonsep Ownership(pemilik) dan borrowing(meminjam), pada kbanyakan kasus reference hanya meminjam data
+  * sedangkan Smart Pointer merupakan pemilik dari data yang ditunjuak
+  */
+
+
+  #[test]
+  fn test_smart_pointer() {
+      let number: Box<i32> = Box::<i32>::new(10);
+
+      show_number(*number);
+      print_number_refrence(&number);
+  }
+
+
+  fn show_number(number: i32) {
+      println!("{}", number);
+  }
+
+  fn print_number_refrence(number: &i32) {
+      println!("{}", number);
+  }

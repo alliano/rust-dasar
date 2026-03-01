@@ -2252,3 +2252,44 @@ fn test_lifetime_annoatation() {
   fn print_number_refrence(number: &i32) {
       println!("{}", number);
   }
+
+
+  #[test]
+  fn test_dereference() {
+      let value1: Box<i32> = Box::<i32>::new(20);
+      let value2: Box<i32> = Box::<i32>::new(21);
+      /*
+       * Dereference
+       * Saat kita menggunakna Reference kadang kita ingin melakukan operasi langsung kepada value nya(bukan reference nya)
+       * Untuk melakukan hal tersebut kita bisa menggunakan Dereference untuk mengakses langsung value reference
+       * Untuk melakukan Dereference kita bisa menggunakan simbol *
+       */
+      let result = *value1 * *value2; // *unutk mengakses nilai aslinya(bukan data reference nya) => melakukan dereference
+      println!("result : {}", result);
+  }
+
+
+
+
+  use std::ops::Deref;
+
+struct MyValue<T> {
+    value: T
+}
+
+impl<T> Deref for MyValue<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.value
+    }
+}
+
+
+#[test]
+fn test_dreference_struct() {
+    let my_value = MyValue { value: 42 };
+
+    let real_value: i32 = *my_value; // melakukan dereference pada struct MyValue untuk mengakses nilai aslinya
+    println!("real value: {}", real_value);
+}
